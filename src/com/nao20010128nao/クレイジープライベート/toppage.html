@@ -1,6 +1,65 @@
 ﻿<html>
 <head>
     <title>いろいろ抜き取り</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <style>
+        h2 {
+            background: #00ffff;
+            color: #0094ff;
+        }
+
+        .frame {
+            padding: 10px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .pad {
+            opacity:0;
+        }
+
+        .content {
+            padding: 20px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+    </style>
 </head>
-<body></body>
+<body>
+    <h2>新しく作成</h2>
+    <div>
+        <h3>簡易族(現在地を抜き出せません)</h3>
+        <div class="frame">
+            <h4 class="frame">転送型</h4>
+            <form class="content" id="easy_redirect" action="/new/easy_redirect" method="post">
+                <div>転送先:</div><input id="address" type="text" value="http://www.google.com" />
+                <hr class="pad" />
+                <input type="submit" value="作成" />
+            </form>
+        </div>
+    </div>
+    <div>
+        <h3>GPS族(現在地を抜き出せますが、時間がかかるかもしれません)</h3>
+        <div class="frame">
+            <h4 class="frame">GPS型</h4>
+            <form class="content" id="easy_redirect" action="/new/gps_get" method="post">
+                <div>転送先:</div><input id="address" type="text" value="http://www.google.com" />
+                <div>もしくは</div>
+                <div><input type="checkbox" id="address" />ページを閉じる</div>
+                <hr  class="pad" />
+                <div>ページタイトル:</div><input id="title" type="text" value="" />
+                <div>メッセージ:</div><input id="message" type="text" value="" />
+                <hr  class="pad" />
+                <input type="submit" value="作成" />
+            </form>
+        </div>
+    </div>
+    <hr />
+    <h2>管理</h2>
+    <form class="content" id="easy_redirect" action="/console" method="post">
+        <div>秘密鍵:</div><input id="secret" type="text" value="" />
+        <hr class="pad" />
+ <input type="submit" value="管理コンソールを開く" />
+    </form>
+</body>
 </html>
