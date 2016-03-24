@@ -1,5 +1,7 @@
 package com.nao20010128nao.クレイジープライベート;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +26,9 @@ public class Utils {
 			if (splittedValue.indexOf('=') == -1) {
 				continue;
 			}
-			String key = splittedValue.substring(0, splittedValue.indexOf('='));
-			String value = splittedValue.substring(splittedValue.indexOf('=') + 1, splittedValue.length());
+			String key = decodePercEnc(splittedValue.substring(0, splittedValue.indexOf('=')));
+			String value = decodePercEnc(
+					splittedValue.substring(splittedValue.indexOf('=') + 1, splittedValue.length()));
 			result.put(key, value);
 		}
 		return result;
@@ -33,5 +36,15 @@ public class Utils {
 
 	public static boolean isNullString(String s) {
 		return s == null || "".equals(s);
+	}
+
+	public static String decodePercEnc(String s) {
+		String r;
+		try {
+			r = URLDecoder.decode(s, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			r = null;
+		}
+		return r;
 	}
 }
