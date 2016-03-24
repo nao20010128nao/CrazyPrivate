@@ -61,6 +61,7 @@ public class DataChain {
 			String s = main.getInternalFileContent("easy_redirect_result.html");
 			String url = "http://" + CPMain.HOST + "/" + np.prefix + "/" + np.publicKey;
 			s = s.replace("{PUBLNK}", url).replace("{PUBLIC}", np.publicKey).replace("{SECRET}", np.privateKey);
+
 			result = NanoHTTPD.newFixedLengthResponse(s);
 		}
 		if (path.startsWith("/new/gps_get")) {
@@ -82,6 +83,16 @@ public class DataChain {
 			dir = new File(dir, "sessions");
 			dir.mkdirs();
 		}
+		return result;
+	}
+
+	public Response getInfoPage(String path, String query) {
+		Map<String, String> queryMap = Utils.getQueryMap(query);
+		Response result = null;
+		if (path.startsWith("/yourtrace")) {
+			String publicKey = queryMap.get("public");
+		}
+
 		return result;
 	}
 

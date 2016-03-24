@@ -41,6 +41,11 @@ public class CPMain extends NanoHTTPD {
 		String dir = session.getUri().replace("//", "/");
 		String query = session.getQueryParameterString();
 		System.out.println("Request: " + dir + (Utils.isNullString(query) ? "" : "?" + query));
+		/*
+		 * if ("".equals(session.getHeaders().getOrDefault("User-Agent", ""))) {
+		 * return newFixedLengthResponse(Status.FORBIDDEN, "text/plain",
+		 * "Attach your user-agent on the header."); }
+		 */
 		Response resp = unknownResponse();
 		{
 			if (dir.equals("/")) {
@@ -65,6 +70,12 @@ public class CPMain extends NanoHTTPD {
 					resp = unknownResponse();
 				}
 			}
+			if (dir.startsWith("/yourtrace")) {
+				resp = dc.getInfoPage(dir, query);
+				if (resp == null) {
+					resp = unknownResponse();
+				}
+			}
 		}
 
 		/////
@@ -76,6 +87,14 @@ public class CPMain extends NanoHTTPD {
 	public Response unknownResponse() {
 		// TODO 自動生成されたメソッド・スタブ
 		return newFixedLengthResponse(Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "");
+	}
+
+	public static Response newRedirectResponse(String destination) {
+		Response resp = newFixedLengthResponse("");
+		resp.setStatus(Status.REDIRECT);
+		resp.setMimeType("application/octet-stream");
+		resp.addHeader("Location", destination);
+		return resp;
 	}
 
 	public String getInternalFileContent(String name) {
