@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
+import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response;
 
 public class DataChain {
@@ -36,17 +37,18 @@ public class DataChain {
 			np.publicKey = createKey(true);
 			np.privateKey = createKey(false);
 			np.mode = "easyRedirect";
+			np.prefix = queryMap.get("path");
 			File dir = new File(filesDir, np.publicKey);
 			dir.mkdirs();
-			String json = new Gson().toJson(np);
+			String json = new Gson().toJson(np, NodeParent.class);
 			try {
 				Files.write(new File(dir, "chain.json").toPath(), json.getBytes(StandardCharsets.UTF_8));
 			} catch (IOException e) {
 				return null;
 			}
 			EasyRedirectOptions opt = new EasyRedirectOptions();
-			opt.address = queryMap.get("addresss");
-			json = new Gson().toJson(opt);
+			opt.address = queryMap.get("address");
+			json = new Gson().toJson(opt, EasyRedirectOptions.class);
 			try {
 				Files.write(new File(dir, "options.json").toPath(), json.getBytes(StandardCharsets.UTF_8));
 			} catch (IOException e) {
@@ -55,6 +57,9 @@ public class DataChain {
 			dir = new File(dir, "sessions");
 			dir.mkdirs();
 			String s = main.getInternalFileContent("easy_redirect_result.html");
+			String url = "http://" + CPMain.HOST + "/" + np.prefix + "/" + np.publicKey;
+			s = s.replace("{PUBLNK}", url).replace("{PUBLIC}", np.publicKey).replace("{SECRET}", np.privateKey);
+			result = NanoHTTPD.newFixedLengthResponse(s);
 		}
 		if (path.startsWith("/new/gps_get")) {
 			// GPS型
@@ -94,7 +99,7 @@ public class DataChain {
 
 	public static class NodeParent {
 		public String publicKey, privateKey;
-		public String mode;
+		public String mode, prefix;
 	}
 
 	public static class EasyRedirectOptions {

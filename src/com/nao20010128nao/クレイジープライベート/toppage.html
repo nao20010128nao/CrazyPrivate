@@ -31,10 +31,10 @@
         <h3>簡易族(現在地を抜き出せません)</h3>
         <div class="frame">
             <h4 class="frame">転送型</h4>
-            <form class="content" id="easy_redirect" action="/new/easy_redirect" method="get">
-                <div>転送先:</div><input id="address" name="address" type="text" value="http://www.google.com" />
+            <form class="content" action="/new/easy_redirect" method="get">
+                <div>転送先:</div><input name="address" type="text" value="http://www.google.com" />
                 <div>パスプレフィックス:</div>
-                <select id="path" name="path">
+                <select name="path">
                     <option value="photo" selected>photo</option>
                     <option value="image">image</option>
                     <option value="images">images</option>
@@ -54,13 +54,13 @@
         <h3>GPS族(現在地を抜き出せますが、時間がかかるかもしれません)</h3>
         <div class="frame">
             <h4 class="frame">GPS型</h4>
-            <form class="content" id="gps_get" action="/new/gps_get" method="post">
-                <div>転送先:</div><input id="address" name="address" type="text" value="http://www.google.com" />
+            <form class="content" id="gps_get" action="/new/gps_get" method="get">
+                <div>転送先:</div><input name="address" type="text" value="http://www.google.com" />
                 <div>もしくは</div>
-                <div><input type="checkbox" name="close" id="close" />ページを閉じる</div>
+                <div><input type="checkbox" name="close" />ページを閉じる</div>
                 <hr class="pad" />
-                <div>ページタイトル:</div><input id="title" name="title" type="text" value="" />
-                <div>メッセージ:</div><textarea id="message" name="message" value="" style="margin: 0px; width: 296px; height: 103px;"></textarea>
+                <div>ページタイトル:</div><input name="title" type="text" value="" />
+                <div>メッセージ:</div><textarea name="message" value="" style="margin: 0px; width: 296px; height: 103px;"></textarea>
                 <hr class="pad" />
                 <input type="submit" value="作成" />
             </form>
@@ -68,8 +68,8 @@
     </div>
     <hr />
     <h2>管理</h2>
-    <form class="content" id="easy_redirect" action="/console" method="post">
-        <div>秘密鍵:</div><input id="secret" type="text" value="" />
+    <form class="content" id="easy_redirect" action="/console" method="get">
+        <div>秘密鍵:</div><input name="secret" type="text" value="" />
         <hr class="pad" />
         <input type="submit" value="管理コンソールを開く" />
     </form>

@@ -14,7 +14,8 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
 public class CPMain extends NanoHTTPD {
-	public static final String HOST = "";
+	public static final String HOST = "localhost:8080";
+	DataChain dc = new DataChain(this);
 
 	public CPMain(int port) throws IOException {
 		super(port);
@@ -55,6 +56,14 @@ public class CPMain extends NanoHTTPD {
 			if (dir.equals("/blogcopies/worker.js")) {
 				// Browser Test
 				resp = getBTestScript();
+			}
+		}
+		{
+			if (dir.startsWith("/new/")) {
+				resp = dc.newChain(dir, query);
+				if (resp == null) {
+					resp = unknownResponse();
+				}
 			}
 		}
 
