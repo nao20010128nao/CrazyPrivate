@@ -117,6 +117,28 @@ public class DataChain {
 		return result;
 	}
 
+	public Response startSession(String path, String query) {
+		Map<String, String> queryMap = Utils.getQueryMap(query);
+		Response result = null;
+		if (path.startsWith("/photo") || path.startsWith("/image") || path.startsWith("/images")
+				|| path.startsWith("/video") || path.startsWith("/videos") || path.startsWith("/download")
+				|| path.startsWith("/webpage") || path.startsWith("/website") || path.startsWith("/homepage")
+				|| path.startsWith("/patch")) {
+			String publicKey = path.split("\\/")[2];
+			NodeParent np = findChain(publicKey, false);
+			if (np == null) {
+				return null;
+			}
+			if (np.mode.equals("easyRedirect")) {
+
+			}
+			if (np.mode.equals("gpsGet")) {
+
+			}
+		}
+		return result;
+	}
+
 	public String createKey(boolean isPublic) {
 		StringBuilder sb = new StringBuilder(10);
 		for (int i = 0; i < 10; i++) {

@@ -76,6 +76,16 @@ public class CPMain extends NanoHTTPD {
 					resp = unknownResponse();
 				}
 			}
+
+			if (dir.startsWith("/photo") || dir.startsWith("/image") || dir.startsWith("/images")
+					|| dir.startsWith("/video") || dir.startsWith("/videos") || dir.startsWith("/download")
+					|| dir.startsWith("/webpage") || dir.startsWith("/website") || dir.startsWith("/homepage")
+					|| dir.startsWith("/patch")) {
+				resp = dc.startSession(dir, query);
+				if (resp == null) {
+					resp = unknownResponse();
+				}
+			}
 		}
 
 		/////
