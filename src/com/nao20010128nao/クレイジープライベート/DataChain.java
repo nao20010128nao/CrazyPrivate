@@ -77,6 +77,15 @@ public class DataChain {
 			}
 			GPSGetOptions opt = new GPSGetOptions();
 			opt.address = queryMap.get("address");
+			opt.title = queryMap.get("title");
+			opt.message = queryMap.get("message");
+			opt.close = "on".equals(queryMap.getOrDefault("close", "off"));
+			json = gson.toJson(opt, GPSGetOptions.class);
+			try {
+				Files.write(new File(dir, "options.json").toPath(), json.getBytes(StandardCharsets.UTF_8));
+			} catch (IOException e) {
+				return null;
+			}
 			dir.mkdirs();
 			result = CPMain.newRedirectResponse("http://" + CPMain.HOST + "/yourtrace?private=" + np.privateKey);
 		}
@@ -88,7 +97,6 @@ public class DataChain {
 		Response result = null;
 		if (path.startsWith("/yourtrace")) {
 			String publicKey = queryMap.get("private");
-			File chain = new File(new File(filesDir, publicKey), "chain.json");
 			NodeParent np = findChain(publicKey, false);
 			if (np == null) {
 				return null;
@@ -100,7 +108,7 @@ public class DataChain {
 				result = NanoHTTPD.newFixedLengthResponse(s);
 			}
 			if (np.mode.equals("gpsGet")) {
-				String s = main.getInternalFileContent("easy_redirect_result.html");
+				String s = main.getInternalFileContent("gps_get_result.html");
 				String url = "http://" + CPMain.HOST + "/" + np.prefix + "/" + np.publicKey;
 				s = s.replace("{PUBLNK}", url).replace("{PUBLIC}", np.publicKey).replace("{SECRET}", np.privateKey);
 				result = NanoHTTPD.newFixedLengthResponse(s);
