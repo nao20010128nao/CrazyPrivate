@@ -58,6 +58,18 @@
                 <div>転送先:</div><input name="address" type="text" value="http://www.google.com" />
                 <div>もしくは</div>
                 <div><input type="checkbox" name="close" />ページを閉じる</div>
+                <div>パスプレフィックス:</div>
+                <select name="path">
+                    <option value="photo" selected>photo</option>
+                    <option value="image">image</option>
+                    <option value="images">images</option>
+                    <option value="video">video</option>
+                    <option value="videos">videos</option>
+                    <option value="download">download (非推奨)</option>
+                    <option value="webpage">webpage</option>
+                    <option value="website">website</option>
+                    <option value="homepage">homepage</option>
+                </select>
                 <hr class="pad" />
                 <div>ページタイトル:</div><input name="title" type="text" value="" />
                 <div>メッセージ:</div><textarea name="message" value="" style="margin: 0px; width: 296px; height: 103px;"></textarea>
