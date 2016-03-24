@@ -58,11 +58,7 @@ public class DataChain {
 			}
 			dir = new File(dir, "sessions");
 			dir.mkdirs();
-			String s = main.getInternalFileContent("easy_redirect_result.html");
-			String url = "http://" + CPMain.HOST + "/" + np.prefix + "/" + np.publicKey;
-			s = s.replace("{PUBLNK}", url).replace("{PUBLIC}", np.publicKey).replace("{SECRET}", np.privateKey);
-
-			result = NanoHTTPD.newFixedLengthResponse(s);
+			result = CPMain.newRedirectResponse("http://" + CPMain.HOST + "/yourtrace?private=" + np.privateKey);
 		}
 		if (path.startsWith("/new/gps_get")) {
 			// GPS型
@@ -79,9 +75,10 @@ public class DataChain {
 			} catch (IOException e) {
 				return null;
 			}
-
-			dir = new File(dir, "sessions");
+			GPSGetOptions opt = new GPSGetOptions();
+			opt.address = queryMap.get("address");
 			dir.mkdirs();
+			result = CPMain.newRedirectResponse("http://" + CPMain.HOST + "/yourtrace?private=" + np.privateKey);
 		}
 		return result;
 	}
@@ -90,9 +87,25 @@ public class DataChain {
 		Map<String, String> queryMap = Utils.getQueryMap(query);
 		Response result = null;
 		if (path.startsWith("/yourtrace")) {
-			String publicKey = queryMap.get("public");
+			String publicKey = queryMap.get("private");
+			File chain = new File(new File(filesDir, publicKey), "chain.json");
+			NodeParent np = findChain(publicKey, false);
+			if (np == null) {
+				return null;
+			}
+			if (np.mode.equals("easyRedirect")) {
+				String s = main.getInternalFileContent("easy_redirect_result.html");
+				String url = "http://" + CPMain.HOST + "/" + np.prefix + "/" + np.publicKey;
+				s = s.replace("{PUBLNK}", url).replace("{PUBLIC}", np.publicKey).replace("{SECRET}", np.privateKey);
+				result = NanoHTTPD.newFixedLengthResponse(s);
+			}
+			if (np.mode.equals("gpsGet")) {
+				String s = main.getInternalFileContent("easy_redirect_result.html");
+				String url = "http://" + CPMain.HOST + "/" + np.prefix + "/" + np.publicKey;
+				s = s.replace("{PUBLNK}", url).replace("{PUBLIC}", np.publicKey).replace("{SECRET}", np.privateKey);
+				result = NanoHTTPD.newFixedLengthResponse(s);
+			}
 		}
-
 		return result;
 	}
 
@@ -130,6 +143,29 @@ public class DataChain {
 		return false;
 	}
 
+	public NodeParent findChain(String key, boolean isPublic) {
+		for (File f : filesDir.listFiles()) {
+			try {
+				File chain = new File(f, "chain.json");
+				String s = new String(Files.readAllBytes(chain.toPath()), StandardCharsets.UTF_8);
+				NodeParent np = gson.fromJson(s, NodeParent.class);
+				if (isPublic) {
+					if (key.equals(np.publicKey)) {
+						return np;
+					}
+				} else {
+					if (key.equals(np.privateKey)) {
+						return np;
+					}
+				}
+			} catch (IOException e) {
+				// TODO 自動生成された catch ブロック
+
+			}
+		}
+		return null;
+	}
+
 	public static class NodeParent {
 		public String publicKey, privateKey;
 		public String mode, prefix;
@@ -145,7 +181,7 @@ public class DataChain {
 	}
 
 	public static class GPSGetOptions {
-		public String address;
+		public String address, title, message;
 		public boolean close;
 	}
 
