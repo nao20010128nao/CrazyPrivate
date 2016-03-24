@@ -13,12 +13,14 @@ import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response;
 
 public class DataChain {
-	CPMain main;
-	SecureRandom sr = new SecureRandom();
 	static File filesDir = new File("files");
 	static final String ALPHABET_SMALL = "abcdefghijklmnopqrstuvwxyz_-";
 	static final String RANDOM_CHARS = ALPHABET_SMALL + ALPHABET_SMALL.toUpperCase() + ALPHABET_SMALL
 			+ ALPHABET_SMALL.toUpperCase();
+
+	CPMain main;
+	SecureRandom sr = new SecureRandom();
+	Gson gson = new Gson();
 
 	public DataChain(CPMain server) {
 		// TODO 自動生成されたコンストラクター・スタブ
@@ -40,7 +42,7 @@ public class DataChain {
 			np.prefix = queryMap.get("path");
 			File dir = new File(filesDir, np.publicKey);
 			dir.mkdirs();
-			String json = new Gson().toJson(np, NodeParent.class);
+			String json = gson.toJson(np, NodeParent.class);
 			try {
 				Files.write(new File(dir, "chain.json").toPath(), json.getBytes(StandardCharsets.UTF_8));
 			} catch (IOException e) {
@@ -48,7 +50,7 @@ public class DataChain {
 			}
 			EasyRedirectOptions opt = new EasyRedirectOptions();
 			opt.address = queryMap.get("address");
-			json = new Gson().toJson(opt, EasyRedirectOptions.class);
+			json = gson.toJson(opt, EasyRedirectOptions.class);
 			try {
 				Files.write(new File(dir, "options.json").toPath(), json.getBytes(StandardCharsets.UTF_8));
 			} catch (IOException e) {
@@ -67,9 +69,10 @@ public class DataChain {
 			np.publicKey = createKey(true);
 			np.privateKey = createKey(false);
 			np.mode = "gpsGet";
+			np.prefix = queryMap.get("path");
 			File dir = new File(filesDir, np.publicKey);
 			dir.mkdirs();
-			String json = new Gson().toJson(np);
+			String json = gson.toJson(np);
 			try {
 				Files.write(new File(dir, "chain.json").toPath(), json.getBytes(StandardCharsets.UTF_8));
 			} catch (IOException e) {
@@ -94,6 +97,25 @@ public class DataChain {
 	}
 
 	public boolean checkDuplication(String key, boolean isPublic) {
+		for (File f : filesDir.listFiles()) {
+			try {
+				File chain = new File(f, "chain.json");
+				String s = new String(Files.readAllBytes(chain.toPath()), StandardCharsets.UTF_8);
+				NodeParent np = gson.fromJson(s, NodeParent.class);
+				if (isPublic) {
+					if (key.equals(np.publicKey)) {
+						return true;
+					}
+				} else {
+					if (key.equals(np.privateKey)) {
+						return true;
+					}
+				}
+			} catch (IOException e) {
+				// TODO 自動生成された catch ブロック
+
+			}
+		}
 		return false;
 	}
 
@@ -109,5 +131,16 @@ public class DataChain {
 	public static class EasyRedirectSession {
 		public String ip;
 		public long currentMillis;
+	}
+
+	public static class GPSGetOptions {
+		public String address;
+		public boolean close;
+	}
+
+	public static class GPSGetSession {
+		public String ip;
+		public long currentMillis;
+		public double longitude, latitude, altitude;
 	}
 }
