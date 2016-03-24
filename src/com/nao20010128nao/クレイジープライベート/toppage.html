@@ -31,8 +31,20 @@
         <h3>簡易族(現在地を抜き出せません)</h3>
         <div class="frame">
             <h4 class="frame">転送型</h4>
-            <form class="content" id="easy_redirect" action="/new/easy_redirect" method="post">
-                <div>転送先:</div><input id="address" type="text" value="http://www.google.com" />
+            <form class="content" id="easy_redirect" action="/new/easy_redirect" method="get">
+                <div>転送先:</div><input id="address" name="address" type="text" value="http://www.google.com" />
+                <div>パスプレフィックス:</div>
+                <select id="path" name="path">
+                    <option value="photo" selected>photo</option>
+                    <option value="image">image</option>
+                    <option value="images">images</option>
+                    <option value="video">video</option>
+                    <option value="videos">videos</option>
+                    <option value="download">download (非推奨)</option>
+                    <option value="webpage">webpage</option>
+                    <option value="website">website</option>
+                    <option value="homepage">homepage</option>
+                </select>
                 <hr class="pad" />
                 <input type="submit" value="作成" />
             </form>
@@ -42,13 +54,13 @@
         <h3>GPS族(現在地を抜き出せますが、時間がかかるかもしれません)</h3>
         <div class="frame">
             <h4 class="frame">GPS型</h4>
-            <form class="content" id="easy_redirect" action="/new/gps_get" method="post">
-                <div>転送先:</div><input id="address" type="text" value="http://www.google.com" />
+            <form class="content" id="gps_get" action="/new/gps_get" method="post">
+                <div>転送先:</div><input id="address" name="address" type="text" value="http://www.google.com" />
                 <div>もしくは</div>
-                <div><input type="checkbox" id="address" />ページを閉じる</div>
+                <div><input type="checkbox" name="close" id="close" />ページを閉じる</div>
                 <hr class="pad" />
-                <div>ページタイトル:</div><input id="title" type="text" value="" />
-                <div>メッセージ:</div><textarea id="message" value="" style="margin: 0px; width: 296px; height: 103px;"></textarea>
+                <div>ページタイトル:</div><input id="title" name="title" type="text" value="" />
+                <div>メッセージ:</div><textarea id="message" name="message" value="" style="margin: 0px; width: 296px; height: 103px;"></textarea>
                 <hr class="pad" />
                 <input type="submit" value="作成" />
             </form>

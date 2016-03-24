@@ -1,9 +1,12 @@
 package com.nao20010128nao.クレイジープライベート;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
@@ -11,6 +14,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
 public class CPMain extends NanoHTTPD {
+	public static final String HOST = "";
 
 	public CPMain(int port) throws IOException {
 		super(port);
@@ -35,8 +39,8 @@ public class CPMain extends NanoHTTPD {
 		// TODO 自動生成されたメソッド・スタブ
 		String dir = session.getUri().replace("//", "/");
 		String query = session.getQueryParameterString();
-		System.out.println("Request: " + dir);
-		Response resp = newFixedLengthResponse(Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "");
+		System.out.println("Request: " + dir + (Utils.isNullString(query) ? "" : "?" + query));
+		Response resp = unknownResponse();
 		{
 			if (dir.equals("/")) {
 				// Top Page
@@ -58,6 +62,31 @@ public class CPMain extends NanoHTTPD {
 		resp.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 		resp.addHeader("Access-Control-Allow-Origin", "*");
 		return resp;
+	}
+
+	public Response unknownResponse() {
+		// TODO 自動生成されたメソッド・スタブ
+		return newFixedLengthResponse(Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "");
+	}
+
+	public String getInternalFileContent(String name) {
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					getClass().getClassLoader().getResourceAsStream("com/nao20010128nao/クレイジープライベート/" + name)));
+			StringWriter sw = new StringWriter();
+			char[] bs = new char[100000];
+			int r;
+			while (true) {
+				r = br.read(bs);
+				if (r <= 0) {
+					break;
+				}
+				sw.write(bs, 0, r);
+			}
+			return sw.toString();
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	Response getTopPage() {
