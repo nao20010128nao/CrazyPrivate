@@ -70,6 +70,12 @@ public class CPMain extends NanoHTTPD {
 					resp = unknownResponse();
 				}
 			}
+			if (dir.startsWith("/test/gps_get")) {
+				resp = dc.newChain(dir, query);
+				if (resp == null) {
+					resp = unknownResponse();
+				}
+			}
 			if (dir.startsWith("/yourtrace")) {
 				resp = dc.getInfoPage(dir, query);
 				if (resp == null) {

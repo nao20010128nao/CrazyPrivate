@@ -3,7 +3,7 @@
     <title>{TITLE}</title>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
     <style>
-        h2 {
+        h2.title {
             background: #00ffff;
             color: #0094ff;
         }
@@ -38,18 +38,15 @@
     </script>
 </head>
 <body>
-    <h2>{TITLE}</h2>
+    <h2>先程入力したテキストは、このように表示されます。</h2>
+    <br />
+    <h2 class="title">{TITLE}</h2>
     <div>
         <h3>{MESSAGE}</h3>
         <div class="frame">
-            <form class="content" hidden action="/submit/{PUBLIC}/{TIME}">
-                <input id="longitude" type="hidden" value="0" />
-                <input id="latitude" type="hidden" value="0" />
-                <input id="altitude" type="hidden" value="0" />
-            </form>
             <p class="enablejs">エラー:Javascriptを有効化して下さい。</p>
             <p class="reqire_gps" hidden>{GPS_MESSAGE}</p>
-            <button id="gps_get" hidden>{GPS_BUTTON}</button>
+            <button id="gps_get" hidden onclick="return window.history.back(-1) & 0;">{GPS_BUTTON}</button>
         </div>
     </div>
 </body>

@@ -24,6 +24,15 @@
             padding-bottom: 0px;
         }
     </style>
+    <script>
+        function testGpsGet() {
+            $("form#gps_get_test > input[name=\"title\"]")           .val($("form#gps_get > input[name=\"title\"]")         .val());
+            $("form#gps_get_test > textarea[name=\"message\"]")     .text($("form#gps_get > textarea[name=\"message\"]")    .val());
+            $("form#gps_get_test > textarea[name=\"gps_message\"]") .text($("form#gps_get > textarea[name=\"gps_message\"]").val());
+            $("form#gps_get_test > input[name=\"gps_button\"]")      .val($("form#gps_get > input[name=\"gps_button\"]")    .val());
+            document.querySelector("form#gps_get_test").submit();
+        }
+    </script>
 </head>
 <body>
     <h2>新しく作成</h2>
@@ -76,7 +85,13 @@
                 <div>GPSメッセージ:</div><textarea name="gps_message" style="margin: 0px; width: 296px; height: 103px;">続行するにはあなたの現在地情報が必要です。</textarea>
                 <div>GPS取得ボタン:</div><input name="gps_button" type="text" value="続行" />
                 <hr class="pad" />
-                <input type="submit" value="作成" />
+                <input type="submit" value="作成" /><input type="button" value="レイアウトを確認" onclick="testGpsGet();" />
+            </form>
+            <form id="gps_get_test" action="/test/gps_get" method="get" hidden>
+                <input name="title" type="text" value="" />
+                <textarea name="message" hidden></textarea>
+                <textarea name="gps_message" hidden></textarea>
+                <input name="gps_button" type="text" value="" />
             </form>
         </div>
     </div>
