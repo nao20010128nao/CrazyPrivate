@@ -41,11 +41,6 @@ public class CPMain extends NanoHTTPD {
 		String dir = session.getUri().replace("//", "/");
 		String query = session.getQueryParameterString();
 		System.out.println("Request: " + dir + (Utils.isNullString(query) ? "" : "?" + query));
-		/*
-		 * if ("".equals(session.getHeaders().getOrDefault("User-Agent", ""))) {
-		 * return newFixedLengthResponse(Status.FORBIDDEN, "text/plain",
-		 * "Attach your user-agent on the header."); }
-		 */
 		Response resp = unknownResponse();
 		{
 			if (dir.equals("/")) {
