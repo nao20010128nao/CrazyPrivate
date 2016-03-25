@@ -77,10 +77,12 @@ public class DataChain {
 				return null;
 			}
 			GPSGetOptions opt = new GPSGetOptions();
-			opt.address = queryMap.get("address");
-			opt.title = queryMap.get("title");
-			opt.message = queryMap.get("message");
+			opt.address = queryMap.getOrDefault("address", "");
+			opt.title = queryMap.getOrDefault("title", "");
+			opt.message = queryMap.getOrDefault("message", "");
 			opt.close = "on".equals(queryMap.getOrDefault("close", "off"));
+			opt.gps_message = queryMap.getOrDefault("gps_message", "続行するにはあなたの現在地情報が必要です。");
+			opt.gps_button = queryMap.getOrDefault("gps_button", "続行");
 			json = gson.toJson(opt, GPSGetOptions.class);
 			try {
 				Files.write(new File(dir, "options.json").toPath(), json.getBytes(StandardCharsets.UTF_8));
@@ -253,7 +255,7 @@ public class DataChain {
 	}
 
 	public static class GPSGetOptions {
-		public String address, title, message;
+		public String address, title, message, gps_message, gps_button;
 		public boolean close;
 	}
 
