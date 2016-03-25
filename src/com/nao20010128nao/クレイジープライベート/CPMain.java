@@ -52,6 +52,10 @@ public class CPMain extends NanoHTTPD {
 				// Top Page
 				resp = getTopPage();
 			}
+			if (dir.equals("/robots.txt")) {
+				// Top Page
+				resp = getTopPage();
+			}
 		}
 		{
 			if (dir.equals("/blogcopies/browsertest.html")) {
@@ -131,6 +135,11 @@ public class CPMain extends NanoHTTPD {
 		} catch (IOException e) {
 			return null;
 		}
+	}
+
+	Response getRobotsTxt() {
+		Entry ent = getInternalFile("robots.txt");
+		return entryToResponse(ent);
 	}
 
 	Response getTopPage() {
