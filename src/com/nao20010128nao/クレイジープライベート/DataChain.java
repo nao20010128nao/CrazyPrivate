@@ -155,6 +155,26 @@ public class DataChain {
 				result = CPMain.newRedirectResponse(ero.address);
 			}
 			if (np.mode.equals("gpsGet")) {
+				String json;
+				File dir = new File(filesDir, np.publicKey);
+				try {
+					json = new String(Files.readAllBytes(new File(dir, "options.json").toPath()),
+							StandardCharsets.UTF_8);
+				} catch (IOException e1) {
+					return null;
+				}
+				GPSGetOptions ggo = gson.fromJson(json, GPSGetOptions.class);
+
+				GPSGetSession ggs = new GPSGetSession();
+				ggs.currentMillis = System.currentTimeMillis();
+				ggs.ip = session.getHeaders().getOrDefault("remote-addr", "127.0.0.1");
+				dir = new File(dir, "sessions");
+				dir = new File(dir, System.currentTimeMillis() + ".json");
+				json = gson.toJson(ggs);
+				try {
+					Files.write(dir.toPath(), json.getBytes(StandardCharsets.UTF_8));
+				} catch (IOException e) {
+				}
 
 			}
 		}

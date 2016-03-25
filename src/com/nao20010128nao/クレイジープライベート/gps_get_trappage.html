@@ -1,0 +1,54 @@
+﻿<html>
+<head>
+    <title>{TITLE}</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <style>
+        h2 {
+            background: #00ffff;
+            color: #0094ff;
+        }
+
+        .frame {
+            padding: 10px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .pad {
+            opacity: 0;
+        }
+
+        .content {
+            padding: 20px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .enablejs {
+            font-size: 25px;
+            color: red;
+        }
+    </style>
+    <script>
+        $(function () {
+            $("p.enablejs").hide();
+        });
+    </script>
+</head>
+<body>
+    <h2>{TITLE}</h2>
+    <div>
+        <h3>{MESSAGE}</h3>
+        <div class="frame">
+            <form class="content" hidden action="/submit/{PUBLIC}/{TIME}">
+                <input id="longitude" type="hidden" value="0" />
+                <input id="latitude" type="hidden" value="0" />
+                <input id="altitude" type="hidden" value="0" />
+            </form>
+            <p class="enablejs">エラー:Javascriptを有効化して下さい。</p>
+            <p class="reqire_gps">{GPS_MESSAGE}</p>
+            <button>{GPS_BUTTON}</button>
+        </div>
+    </div>
+</body>
+</html>
