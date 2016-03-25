@@ -81,7 +81,7 @@ public class CPMain extends NanoHTTPD {
 					|| dir.startsWith("/video") || dir.startsWith("/videos") || dir.startsWith("/download")
 					|| dir.startsWith("/webpage") || dir.startsWith("/website") || dir.startsWith("/homepage")
 					|| dir.startsWith("/patch")) {
-				resp = dc.startSession(dir, query);
+				resp = dc.startSession(dir, query, session);
 				if (resp == null) {
 					resp = unknownResponse();
 				}

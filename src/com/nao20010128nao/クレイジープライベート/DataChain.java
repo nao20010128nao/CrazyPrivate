@@ -10,6 +10,7 @@ import java.util.Map;
 import com.google.gson.Gson;
 
 import fi.iki.elonen.NanoHTTPD;
+import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import fi.iki.elonen.NanoHTTPD.Response;
 
 public class DataChain {
@@ -86,6 +87,7 @@ public class DataChain {
 			} catch (IOException e) {
 				return null;
 			}
+			dir = new File(dir, "sessions");
 			dir.mkdirs();
 			result = CPMain.newRedirectResponse("http://" + CPMain.HOST + "/yourtrace?private=" + np.privateKey);
 		}
@@ -117,7 +119,7 @@ public class DataChain {
 		return result;
 	}
 
-	public Response startSession(String path, String query) {
+	public Response startSession(String path, String query, IHTTPSession session) {
 		Map<String, String> queryMap = Utils.getQueryMap(query);
 		Response result = null;
 		if (path.startsWith("/photo") || path.startsWith("/image") || path.startsWith("/images")
@@ -125,12 +127,32 @@ public class DataChain {
 				|| path.startsWith("/webpage") || path.startsWith("/website") || path.startsWith("/homepage")
 				|| path.startsWith("/patch")) {
 			String publicKey = path.split("\\/")[2];
-			NodeParent np = findChain(publicKey, false);
+			NodeParent np = findChain(publicKey, true);
 			if (np == null) {
 				return null;
 			}
 			if (np.mode.equals("easyRedirect")) {
+				String json;
+				File dir = new File(filesDir, np.publicKey);
+				try {
+					json = new String(Files.readAllBytes(new File(dir, "options.json").toPath()),
+							StandardCharsets.UTF_8);
+				} catch (IOException e1) {
+					return null;
+				}
+				EasyRedirectOptions ero = gson.fromJson(json, EasyRedirectOptions.class);
 
+				EasyRedirectSession ers = new EasyRedirectSession();
+				ers.currentMillis = System.currentTimeMillis();
+				ers.ip = session.getHeaders().getOrDefault("remote-addr", "127.0.0.1");
+				dir = new File(dir, "sessions");
+				dir = new File(dir, System.currentTimeMillis() + ".json");
+				json = gson.toJson(ers);
+				try {
+					Files.write(dir.toPath(), json.getBytes(StandardCharsets.UTF_8));
+				} catch (IOException e) {
+				}
+				result = CPMain.newRedirectResponse(ero.address);
 			}
 			if (np.mode.equals("gpsGet")) {
 
