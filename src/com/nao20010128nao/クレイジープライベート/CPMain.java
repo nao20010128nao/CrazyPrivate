@@ -14,7 +14,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
 public class CPMain extends NanoHTTPD {
-	public static final String HOST = "60.37.75.246:8080";
+	public static final String HOST = "localhost:8080";
 	DataChain dc = new DataChain(this);
 
 	public CPMain(int port) throws IOException {
