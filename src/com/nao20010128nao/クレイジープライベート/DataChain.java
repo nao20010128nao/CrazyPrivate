@@ -98,26 +98,21 @@ public class DataChain {
 		}
 		if (path.startsWith("/test/gps_get")) {
 			// GPS型(テストページ)
-			try {
-				final String title = queryMap.getOrDefault("title", "");
-				final String message = queryMap.getOrDefault("message", "");
-				final String gps_message = queryMap.getOrDefault("gps_message", "続行するにはあなたの現在地情報が必要です。");
-				final String gps_button = queryMap.getOrDefault("gps_button", "続行");
+			final String title = queryMap.getOrDefault("title", "");
+			final String message = queryMap.getOrDefault("message", "");
+			final String gps_message = queryMap.getOrDefault("gps_message", "続行するにはあなたの現在地情報が必要です。");
+			final String gps_button = queryMap.getOrDefault("gps_button", "続行");
 
-				String s = main.getInternalFileContent("gps_get_test.html");
-				Document doc = Jsoup.parse(s);
-				doc.select("title").get(0).text(title);
-				doc.select("h2.title").get(0).text(title);
-				doc.select("div>h3").get(0).text(message);
-				doc.select("p.reqire_gps").get(0).text(gps_message);
-				doc.select("button#gps_get").get(0).text(gps_button);
-				s = doc.html();
+			String s = main.getInternalFileContent("gps_get_test.html");
+			Document doc = Jsoup.parse(s);
+			doc.select("title").get(0).text(title);
+			doc.select("h2.title").get(0).text(title);
+			doc.select("div>h3").get(0).text(message);
+			doc.select("p.reqire_gps").get(0).text(gps_message);
+			doc.select("button#gps_get").get(0).text(gps_button);
+			s = doc.html();
 
-				result = NanoHTTPD.newFixedLengthResponse(s);
-			} catch (Throwable e) {
-				// TODO 自動生成された catch ブロック
-				e.printStackTrace();
-			}
+			result = NanoHTTPD.newFixedLengthResponse(s);
 		}
 		return result;
 	}
