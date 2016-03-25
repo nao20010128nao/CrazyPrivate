@@ -14,7 +14,7 @@ public class Utils {
 		// System.out.println(ent.getKey());
 		// System.out.println(ent.getValue());
 		// });
-		if (query == null) {
+		if (isNullString(query)) {
 			return Collections.emptyMap();
 		}
 		if (query.startsWith("?")) {

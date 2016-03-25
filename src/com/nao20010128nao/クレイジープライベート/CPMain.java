@@ -14,7 +14,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
 public class CPMain extends NanoHTTPD {
-	public static final String HOST = "localhost:8080";
+	public static final String HOST = "60.37.75.246:8080";
 	DataChain dc = new DataChain(this);
 
 	public CPMain(int port) throws IOException {
@@ -83,6 +83,12 @@ public class CPMain extends NanoHTTPD {
 				}
 				if (dir.startsWith("/yourtrace")) {
 					resp = dc.getInfoPage(dir, query);
+					if (resp == null) {
+						resp = unknownResponse();
+					}
+				}
+				if (dir.startsWith("/submit/")) {
+					resp = dc.secondarySession(dir, query, session);
 					if (resp == null) {
 						resp = unknownResponse();
 					}
