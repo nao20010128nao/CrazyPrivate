@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.jsoup.Jsoup;
@@ -17,6 +19,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import fi.iki.elonen.NanoHTTPD.Response;
 
 public class DataChain {
+	static final List<String> GPS_NULL_VALUES = Arrays.asList("undefined", "NaN", "", "null", "0", null);
 	static File filesDir = new File("files");
 	static final String ALPHABET_SMALL = "abcdefghijklmnopqrstuvwxyz_-";
 	static final String RANDOM_CHARS = ALPHABET_SMALL + ALPHABET_SMALL.toUpperCase() + ALPHABET_SMALL
@@ -199,6 +202,141 @@ public class DataChain {
 				} catch (IOException e) {
 				}
 
+				String s = main.getInternalFileContent("gps_get_test.html");
+				Document doc = Jsoup.parse(s);
+				doc.select("title").get(0).text(ggo.title);
+				doc.select("h2.title").get(0).text(ggo.title);
+				doc.select("div>h3").get(0).text(ggo.message);
+				doc.select("p.reqire_gps").get(0).text(ggo.gps_message);
+				doc.select("button#gps_get").get(0).text(ggo.gps_button);
+				doc.select("form").get(0).attr("action", doc.select("form").get(0).attr("action")
+						.replace("{TIME}", ggs.currentMillis + "").replace("", np.publicKey));
+				s = doc.html();
+
+				result = NanoHTTPD.newFixedLengthResponse(s);
+			}
+		}
+		return result;
+	}
+
+	public Response secondarySession(String path, String query, IHTTPSession session) {
+		Map<String, String> queryMap = Utils.getQueryMap(query);
+		Response result = null;
+		if (path.startsWith("/submit/")) {
+			String[] splitted = path.split("\\/");
+			String publicKey = splitted[2];
+			String sessionID = splitted[3];
+			File traceDir = new File(filesDir, publicKey + File.pathSeparatorChar);
+			File sessionFile = new File(traceDir, "sessions" + File.pathSeparatorChar + sessionID + ".json");
+			if (sessionFile.exists()) {
+				String json, json2;
+				try {
+					json = new String(Files.readAllBytes(sessionFile.toPath()), StandardCharsets.UTF_8);
+					json2 = new String(Files.readAllBytes(new File(traceDir, "options.json").toPath()),
+							StandardCharsets.UTF_8);
+				} catch (IOException e) {
+					return null;
+				}
+				GPSGetOptions ggo = gson.fromJson(json2, GPSGetOptions.class);
+				GPSGetSession ggs = gson.fromJson(json, GPSGetSession.class);
+				if (!ggs.done) {
+					{
+						DoubleValue dv = new DoubleValue();
+						String tmp = queryMap.getOrDefault("latitude", "NaN");
+						if (GPS_NULL_VALUES.contains(tmp)) {
+							dv.value = 0;
+							dv.NaN = true;
+						} else {
+							dv.value = new Double(tmp);
+							dv.NaN = false;
+						}
+						ggs.latitude = dv;
+					}
+					{
+						DoubleValue dv = new DoubleValue();
+						String tmp = queryMap.getOrDefault("longitude", "NaN");
+						if (GPS_NULL_VALUES.contains(tmp)) {
+							dv.value = 0;
+							dv.NaN = true;
+						} else {
+							dv.value = new Double(tmp);
+							dv.NaN = false;
+						}
+						ggs.longitude = dv;
+					}
+					{
+						DoubleValue dv = new DoubleValue();
+						String tmp = queryMap.getOrDefault("altitude", "NaN");
+						if (GPS_NULL_VALUES.contains(tmp)) {
+							dv.value = 0;
+							dv.NaN = true;
+						} else {
+							dv.value = new Double(tmp);
+							dv.NaN = false;
+						}
+						ggs.altitude = dv;
+					}
+					{
+						DoubleValue dv = new DoubleValue();
+						String tmp = queryMap.getOrDefault("accuracy", "NaN");
+						if (GPS_NULL_VALUES.contains(tmp)) {
+							dv.value = 0;
+							dv.NaN = true;
+						} else {
+							dv.value = new Double(tmp);
+							dv.NaN = false;
+						}
+						ggs.accuracy = dv;
+					}
+					{
+						DoubleValue dv = new DoubleValue();
+						String tmp = queryMap.getOrDefault("altitudeAccuracy", "NaN");
+						if (GPS_NULL_VALUES.contains(tmp)) {
+							dv.value = 0;
+							dv.NaN = true;
+						} else {
+							dv.value = new Double(tmp);
+							dv.NaN = false;
+						}
+						ggs.altitudeAccuracy = dv;
+					}
+					{
+						DoubleValue dv = new DoubleValue();
+						String tmp = queryMap.getOrDefault("heading", "NaN");
+						if (GPS_NULL_VALUES.contains(tmp)) {
+							dv.value = 0;
+							dv.NaN = true;
+						} else {
+							dv.value = new Double(tmp);
+							dv.NaN = false;
+						}
+						ggs.heading = dv;
+					}
+					{
+						DoubleValue dv = new DoubleValue();
+						String tmp = queryMap.getOrDefault("speed", "NaN");
+						if (GPS_NULL_VALUES.contains(tmp)) {
+							dv.value = 0;
+							dv.NaN = true;
+						} else {
+							dv.value = new Double(tmp);
+							dv.NaN = false;
+						}
+						ggs.speed = dv;
+					}
+					ggs.done = true;
+					json2 = gson.toJson(ggs);
+					try {
+						Files.write(sessionFile.toPath(), json2.getBytes());
+					} catch (IOException e) {
+						return null;
+					}
+					if (ggo.close) {
+						result = CPMain.newRedirectResponse("http://" + CPMain.HOST + "/close");
+					} else {
+						result = CPMain.newRedirectResponse(ggo.address);
+					}
+				}
 			}
 		}
 		return result;
@@ -283,6 +421,12 @@ public class DataChain {
 	public static class GPSGetSession {
 		public String ip;
 		public long currentMillis;
-		public double longitude, latitude, altitude;
+		public DoubleValue latitude, longitude, altitude, accuracy, altitudeAccuracy, heading, speed;
+		public boolean done;
+	}
+
+	public static class DoubleValue {
+		public double value;
+		public boolean NaN = false;
 	}
 }

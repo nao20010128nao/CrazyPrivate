@@ -53,8 +53,12 @@ public class CPMain extends NanoHTTPD {
 				resp = getTopPage();
 			}
 			if (dir.equals("/robots.txt")) {
-				// Top Page
+				// robots.txt
 				resp = getTopPage();
+			}
+			if (dir.equals("/close")) {
+				// robots.txt
+				resp = getClosePage();
 			}
 		}
 		{
@@ -149,6 +153,11 @@ public class CPMain extends NanoHTTPD {
 
 	Response getBTestHome() {
 		Entry ent = getInternalFile("browsertest.html");
+		return entryToResponse(ent);
+	}
+
+	Response getClosePage() {
+		Entry ent = getInternalFile("close.html");
 		return entryToResponse(ent);
 	}
 

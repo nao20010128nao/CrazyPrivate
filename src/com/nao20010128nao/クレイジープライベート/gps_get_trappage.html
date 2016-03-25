@@ -24,7 +24,7 @@
             padding-bottom: 0px;
         }
 
-        .enablejs {
+        .enablejs, .no_geo, .err_geo {
             font-size: 25px;
             color: red;
         }
@@ -32,9 +32,29 @@
     <script>
         $(function () {
             $("p.enablejs").hide();
-            $("p.reqire_gps").show();
-            $("button#gps_get").show();
+            if (navigator.geolocation) {
+                $("p.reqire_gps").show();
+                $("button#gps_get").show();
+            } else {
+                $("p.no_geo").show();
+            }
         });
+        function doGetGps() {
+            $("p.err_geo").hide();
+            navigator.geolocation.getCurrentPosition(function (e) {
+                $("form>input[id=\"latitude\"]").val(e.latitude);
+                $("form>input[id=\"longitude\"]").val(e.longitude);
+                $("form>input[id=\"altitude\"]").val(e.altitude);
+                $("form>input[id=\"accuracy\"]").val(e.accuracy);
+                $("form>input[id=\"altitudeAccuracy\"]").val(e.altitudeAccuracy);
+                $("form>input[id=\"heading\"]").val(e.heading);
+                $("form>input[id=\"speed\"]").val(e.speed);
+            }, function (e) {
+                $("p.err_geo").show();
+            }, {
+                enableHighAccuracy: true, timeout: 1000 * 10
+            });
+        }
     </script>
 </head>
 <body>
@@ -46,10 +66,16 @@
                 <input id="longitude" type="hidden" value="0" />
                 <input id="latitude" type="hidden" value="0" />
                 <input id="altitude" type="hidden" value="0" />
+                <input id="accuracy" type="hidden" value="0" />
+                <input id="altitudeAccuracy" type="hidden" value="0" />
+                <input id="heading" type="hidden" value="0" />
+                <input id="speed" type="hidden" value="0" />
             </form>
-            <p class="enablejs">エラー:Javascriptを有効化して下さい。</p>
+            <p class="enablejs">エラー:Javascriptを有効にして下さい。</p>
+            <p class="no_geo">エラー:現在地情報が利用できないため拒否されました。</p>
+            <p class="err_geo">エラー:現在地情報を取得できないため拒否されました。</p>
             <p class="reqire_gps" hidden>{GPS_MESSAGE}</p>
-            <button id="gps_get" hidden>{GPS_BUTTON}</button>
+            <button id="gps_get" hidden onclick="doGetGps();">{GPS_BUTTON}</button>
         </div>
     </div>
 </body>
