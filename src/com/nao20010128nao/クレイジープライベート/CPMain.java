@@ -38,63 +38,70 @@ public class CPMain extends NanoHTTPD {
 	@Override
 	public Response serve(IHTTPSession session) {
 		// TODO 自動生成されたメソッド・スタブ
-		String dir = session.getUri().replace("//", "/");
-		String query = session.getQueryParameterString();
-		System.out.println("Request: " + dir + (Utils.isNullString(query) ? "" : "?" + query));
-		Response resp = unknownResponse();
-		{
-			if (dir.equals("/")) {
-				// Top Page
-				resp = getTopPage();
-			}
-			if (dir.equals("/robots.txt")) {
-				// robots.txt
-				resp = getTopPage();
-			}
-			if (dir.equals("/close")) {
-				// robots.txt
-				resp = getClosePage();
-			}
-		}
-		{
-			if (dir.equals("/blogcopies/browsertest.html")) {
-				// Browser Test
-				resp = getBTestHome();
-			}
-			if (dir.equals("/blogcopies/worker.js")) {
-				// Browser Test
-				resp = getBTestScript();
-			}
-		}
-		{
-			if (dir.startsWith("/new/")) {
-				resp = dc.newChain(dir, query);
-				if (resp == null) {
-					resp = unknownResponse();
+		Response resp;
+		try {
+			String dir = session.getUri().replace("//", "/");
+			String query = session.getQueryParameterString();
+			System.out.println("Request: " + dir + (Utils.isNullString(query) ? "" : "?" + query));
+			resp = unknownResponse();
+			{
+				if (dir.equals("/")) {
+					// Top Page
+					resp = getTopPage();
+				}
+				if (dir.equals("/robots.txt")) {
+					// robots.txt
+					resp = getTopPage();
+				}
+				if (dir.equals("/close")) {
+					// robots.txt
+					resp = getClosePage();
 				}
 			}
-			if (dir.startsWith("/test/gps_get")) {
-				resp = dc.newChain(dir, query);
-				if (resp == null) {
-					resp = unknownResponse();
+			{
+				if (dir.equals("/blogcopies/browsertest.html")) {
+					// Browser Test
+					resp = getBTestHome();
+				}
+				if (dir.equals("/blogcopies/worker.js")) {
+					// Browser Test
+					resp = getBTestScript();
 				}
 			}
-			if (dir.startsWith("/yourtrace")) {
-				resp = dc.getInfoPage(dir, query);
-				if (resp == null) {
-					resp = unknownResponse();
+			{
+				if (dir.startsWith("/new/")) {
+					resp = dc.newChain(dir, query);
+					if (resp == null) {
+						resp = unknownResponse();
+					}
 				}
-			}
+				if (dir.startsWith("/test/gps_get")) {
+					resp = dc.newChain(dir, query);
+					if (resp == null) {
+						resp = unknownResponse();
+					}
+				}
+				if (dir.startsWith("/yourtrace")) {
+					resp = dc.getInfoPage(dir, query);
+					if (resp == null) {
+						resp = unknownResponse();
+					}
+				}
 
-			if (dir.startsWith("/photo") || dir.startsWith("/image") || dir.startsWith("/images")
-					|| dir.startsWith("/video") || dir.startsWith("/videos") || dir.startsWith("/download")
-					|| dir.startsWith("/webpage") || dir.startsWith("/website") || dir.startsWith("/homepage")
-					|| dir.startsWith("/patch")) {
-				resp = dc.startSession(dir, query, session);
-				if (resp == null) {
-					resp = unknownResponse();
+				if (dir.startsWith("/photo") || dir.startsWith("/image") || dir.startsWith("/images")
+						|| dir.startsWith("/video") || dir.startsWith("/videos") || dir.startsWith("/download")
+						|| dir.startsWith("/webpage") || dir.startsWith("/website") || dir.startsWith("/homepage")
+						|| dir.startsWith("/patch")) {
+					resp = dc.startSession(dir, query, session);
+					if (resp == null) {
+						resp = unknownResponse();
+					}
 				}
 			}
+		} catch (Exception e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+			resp = unknownResponse();
 		}
 
 		/////
