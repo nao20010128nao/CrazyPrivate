@@ -64,13 +64,13 @@
         <h3>{MESSAGE}</h3>
         <div class="frame">
             <form class="content" hidden action="/submit/{PUBLIC}/{TIME}">
-                <input id="longitude" type="hidden" value="0" />
-                <input id="latitude" type="hidden" value="0" />
-                <input id="altitude" type="hidden" value="0" />
-                <input id="accuracy" type="hidden" value="0" />
-                <input id="altitudeAccuracy" type="hidden" value="0" />
-                <input id="heading" type="hidden" value="0" />
-                <input id="speed" type="hidden" value="0" />
+                <input id="longitude" type="number" value="0" />
+                <input id="latitude" type="number" value="0" />
+                <input id="altitude" type="number" value="0" />
+                <input id="accuracy" type="number" value="0" />
+                <input id="altitudeAccuracy" type="number" value="0" />
+                <input id="heading" type="number" value="0" />
+                <input id="speed" type="number" value="0" />
             </form>
             <p class="enablejs">エラー:Javascriptを有効にして下さい。</p>
             <p class="no_geo" hidden>エラー:現在地情報が利用できないため拒否されました。</p>
