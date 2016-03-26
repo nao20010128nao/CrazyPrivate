@@ -20,7 +20,7 @@ import fi.iki.elonen.NanoHTTPD.Response;
 
 public class DataChain {
 	static final List<String> GPS_NULL_VALUES = Arrays.asList("undefined", "NaN", "", "null", "0", null);
-	static File filesDir = new File("files");
+	static final File FILES_DIR = new File("files");
 	static final String ALPHABET_SMALL = "abcdefghijklmnopqrstuvwxyz_-";
 	static final String RANDOM_CHARS = ALPHABET_SMALL + ALPHABET_SMALL.toUpperCase() + ALPHABET_SMALL
 			+ ALPHABET_SMALL.toUpperCase();
@@ -32,8 +32,8 @@ public class DataChain {
 	public DataChain(CPMain server) {
 		// TODO 自動生成されたコンストラクター・スタブ
 		main = server;
-		if (!filesDir.exists()) {
-			filesDir.mkdirs();
+		if (!FILES_DIR.exists()) {
+			FILES_DIR.mkdirs();
 		}
 	}
 
@@ -47,7 +47,7 @@ public class DataChain {
 			np.privateKey = createKey(false);
 			np.mode = "easyRedirect";
 			np.prefix = queryMap.get("path");
-			File dir = new File(filesDir, np.publicKey);
+			File dir = new File(FILES_DIR, np.publicKey);
 			dir.mkdirs();
 			String json = gson.toJson(np, NodeParent.class);
 			try {
@@ -74,7 +74,7 @@ public class DataChain {
 			np.privateKey = createKey(false);
 			np.mode = "gpsGet";
 			np.prefix = queryMap.get("path");
-			File dir = new File(filesDir, np.publicKey);
+			File dir = new File(FILES_DIR, np.publicKey);
 			dir.mkdirs();
 			String json = gson.toJson(np);
 			try {
@@ -159,7 +159,7 @@ public class DataChain {
 			}
 			if (np.mode.equals("easyRedirect")) {
 				String json;
-				File dir = new File(filesDir, np.publicKey);
+				File dir = new File(FILES_DIR, np.publicKey);
 				try {
 					json = new String(Files.readAllBytes(new File(dir, "options.json").toPath()),
 							StandardCharsets.UTF_8);
@@ -182,7 +182,7 @@ public class DataChain {
 			}
 			if (np.mode.equals("gpsGet")) {
 				String json;
-				File dir = new File(filesDir, np.publicKey);
+				File dir = new File(FILES_DIR, np.publicKey);
 				try {
 					json = new String(Files.readAllBytes(new File(dir, "options.json").toPath()),
 							StandardCharsets.UTF_8);
@@ -227,7 +227,7 @@ public class DataChain {
 			String[] splitted = path.split("\\/");
 			String publicKey = splitted[2];
 			String sessionID = splitted[3];
-			File traceDir = new File(filesDir, publicKey);
+			File traceDir = new File(FILES_DIR, publicKey);
 			File sessionFile = new File(new File(traceDir, "sessions"), sessionID + ".json");
 			if (sessionFile.exists()) {
 				String json, json2;
@@ -446,7 +446,7 @@ public class DataChain {
 	}
 
 	public boolean checkDuplication(String key, boolean isPublic) {
-		for (File f : filesDir.listFiles()) {
+		for (File f : FILES_DIR.listFiles()) {
 			try {
 				File chain = new File(f, "chain.json");
 				String s = new String(Files.readAllBytes(chain.toPath()), StandardCharsets.UTF_8);
@@ -469,7 +469,7 @@ public class DataChain {
 	}
 
 	public NodeParent findChain(String key, boolean isPublic) {
-		for (File f : filesDir.listFiles()) {
+		for (File f : FILES_DIR.listFiles()) {
 			try {
 				File chain = new File(f, "chain.json");
 				String s = new String(Files.readAllBytes(chain.toPath()), StandardCharsets.UTF_8);
