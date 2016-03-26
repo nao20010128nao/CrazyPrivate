@@ -326,6 +326,11 @@ public class DataChain {
 						}
 						ggs.speed = dv;
 					}
+					if (ggs.latitude.NaN & ggs.longitude.NaN & ggs.altitude.NaN & ggs.accuracy.NaN
+							& ggs.altitudeAccuracy.NaN & ggs.heading.NaN & ggs.speed.NaN) {
+						String joined = queryMap.getOrDefault("joined", "$$$$$$");
+						String[] data = joined.split("\\$");
+					}
 					ggs.done = true;
 					json2 = gson.toJson(ggs);
 					try {
@@ -334,9 +339,9 @@ public class DataChain {
 					}
 				}
 				if (ggo.close) {
-					result = CPMain.newRedirectResponse("http://" + CPMain.HOST + "/close");
+					result = NanoHTTPD.newFixedLengthResponse("http://" + CPMain.HOST + "/close");
 				} else {
-					result = CPMain.newRedirectResponse(ggo.address);
+					result = NanoHTTPD.newFixedLengthResponse(ggo.address);
 				}
 			} else {
 				System.err.println("File does not exists");
