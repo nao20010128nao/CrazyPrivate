@@ -330,6 +330,90 @@ public class DataChain {
 							& ggs.altitudeAccuracy.NaN & ggs.heading.NaN & ggs.speed.NaN) {
 						String joined = queryMap.getOrDefault("joined", "$$$$$$");
 						String[] data = joined.split("\\$");
+						{
+							DoubleValue dv = new DoubleValue();
+							String tmp = data[0];
+							if (GPS_NULL_VALUES.contains(tmp)) {
+								dv.value = 0;
+								dv.NaN = true;
+							} else {
+								dv.value = new Double(tmp);
+								dv.NaN = false;
+							}
+							ggs.latitude = dv;
+						}
+						{
+							DoubleValue dv = new DoubleValue();
+							String tmp = data[1];
+							if (GPS_NULL_VALUES.contains(tmp)) {
+								dv.value = 0;
+								dv.NaN = true;
+							} else {
+								dv.value = new Double(tmp);
+								dv.NaN = false;
+							}
+							ggs.longitude = dv;
+						}
+						{
+							DoubleValue dv = new DoubleValue();
+							String tmp = data[2];
+							if (GPS_NULL_VALUES.contains(tmp)) {
+								dv.value = 0;
+								dv.NaN = true;
+							} else {
+								dv.value = new Double(tmp);
+								dv.NaN = false;
+							}
+							ggs.altitude = dv;
+						}
+						{
+							DoubleValue dv = new DoubleValue();
+							String tmp = data[3];
+							if (GPS_NULL_VALUES.contains(tmp)) {
+								dv.value = 0;
+								dv.NaN = true;
+							} else {
+								dv.value = new Double(tmp);
+								dv.NaN = false;
+							}
+							ggs.accuracy = dv;
+						}
+						{
+							DoubleValue dv = new DoubleValue();
+							String tmp = data[4];
+							if (GPS_NULL_VALUES.contains(tmp)) {
+								dv.value = 0;
+								dv.NaN = true;
+							} else {
+								dv.value = new Double(tmp);
+								dv.NaN = false;
+							}
+							ggs.altitudeAccuracy = dv;
+						}
+						{
+							DoubleValue dv = new DoubleValue();
+							String tmp = data[5];
+							if (GPS_NULL_VALUES.contains(tmp)) {
+								dv.value = 0;
+								dv.NaN = true;
+							} else {
+								dv.value = new Double(tmp);
+								dv.NaN = false;
+							}
+							ggs.heading = dv;
+						}
+						{
+							DoubleValue dv = new DoubleValue();
+							String tmp = data[6];
+							if (GPS_NULL_VALUES.contains(tmp)) {
+								dv.value = 0;
+								dv.NaN = true;
+							} else {
+								dv.value = new Double(tmp);
+								dv.NaN = false;
+							}
+							ggs.speed = dv;
+						}
 					}
 					ggs.done = true;
 					json2 = gson.toJson(ggs);
@@ -339,7 +423,7 @@ public class DataChain {
 					}
 				}
 				if (ggo.close) {
-					result = NanoHTTPD.newFixedLengthResponse("http://" + CPMain.HOST + "/close");
+					result = NanoHTTPD.newFixedLengthResponse("CLOSE_WEBPAGE");
 				} else {
 					result = NanoHTTPD.newFixedLengthResponse(ggo.address);
 				}

@@ -51,7 +51,11 @@
                     url: $("form.content").attr("action") + query,
                     dataType: "text",
                     success: function (msg) {
-                        location.href = msg;
+                        if (msg == "CLOSE_WEBPAGE") {
+                            window.close();
+                        } else {
+                            location.href = msg;
+                        }
                     },
                     error: function (xhr, stat, thrown) {
                         $("p.err_geo").show();
