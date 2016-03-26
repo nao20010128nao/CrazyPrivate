@@ -5,12 +5,17 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import com.google.gson.Gson;
 
@@ -155,6 +160,10 @@ public class DataChain {
 			String publicKey = path.split("\\/")[2];
 			NodeParent np = findChain(publicKey, true);
 			if (np == null) {
+				return null;
+			}
+			String urlPrefix = path.split("\\/")[1];
+			if (!np.prefix.equals(urlPrefix)) {
 				return null;
 			}
 			if (np.mode.equals("easyRedirect")) {
@@ -428,7 +437,93 @@ public class DataChain {
 					result = NanoHTTPD.newFixedLengthResponse(ggo.address);
 				}
 			} else {
-				System.err.println("File does not exists");
+				System.err.println("File does not exist");
+			}
+		}
+		return result;
+	}
+
+	public Response manageConsole(String path, String query) {
+		Map<String, String> queryMap = Utils.getQueryMap(query);
+		Response result = null;
+		if (path.startsWith("/console/home")) {
+			NodeParent np = findChain(queryMap.get("secret"), false);
+			if (np == null) {
+				result = NanoHTTPD.newFixedLengthResponse(main.getInternalFileContent("manage_error_notfound.html"));
+			} else {
+				String publnk = "http://" + CPMain.HOST + "/" + np.prefix + "/" + np.publicKey;
+				Document doc = Jsoup.parse(main.getInternalFileContent("manage_home.html"));
+				doc.select("form.frame>div>div>input#secret").get(0).attr("value", np.privateKey);
+				doc.select("form.frame>div>div>input#public").get(0).attr("value", np.publicKey);
+				doc.select("form.frame>div>div>input#publnk").get(0).attr("value", publnk);
+				{
+					File sessionsDir = new File(new File(FILES_DIR, np.publicKey), "sessions");
+					Element history = doc.select("div#history").get(0);
+					for (File session : sessionsDir.listFiles()) {
+						Element section = null;
+						if (np.mode.equals("easyRedirect")) {
+							EasyRedirectSession ers;
+							try {
+								ers = gson.fromJson(
+										new String(Files.readAllBytes(session.toPath()), StandardCharsets.UTF_8),
+										EasyRedirectSession.class);
+							} catch (Throwable e) {
+								// TODO 自動生成された catch ブロック
+								return null;
+							}
+							section = Jsoup.parseBodyFragment(
+									main.getInternalFileContent("fragment_easy_redirect_session.html"));
+							Element date = section.select("div>p#date").get(0);
+							Element ip = section.select("div>p#ip").get(0);
+							{
+								Calendar calendar = Calendar.getInstance();
+								calendar.setTimeInMillis(ers.currentMillis);
+								Date dat = calendar.getTime();
+								LocalDateTime ldt = LocalDateTime.of(calendar.get(Calendar.YEAR),
+										calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
+										calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE),
+										calendar.get(Calendar.SECOND));
+								DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH時mm分ss秒");
+								date.text(date.text().replace("{DATE}", ldt.format(dtf)));
+							}
+							ip.text(ip.text().replace("{ADDR}", ers.ip));
+						}
+
+						if (section != null) {
+							history.appendChild(section.select("div").get(0));
+						}
+					}
+				}
+				result = NanoHTTPD.newFixedLengthResponse(doc.html());
+			}
+		}
+		if (path.startsWith("/console/edit")) {
+			NodeParent np = findChain(path.split("\\/")[3], false);
+			if (np == null) {
+				result = NanoHTTPD.newFixedLengthResponse(main.getInternalFileContent("manage_error_notfound.html"));
+			} else {
+
+			}
+		}
+		if (path.startsWith("/console/delete")) {
+			NodeParent np = findChain(path.split("\\/")[3], false);
+			if (np == null) {
+				result = NanoHTTPD.newFixedLengthResponse(main.getInternalFileContent("manage_error_notfound.html"));
+			} else {
+				File chainDir = new File(FILES_DIR, np.publicKey);
+
+				new File(chainDir, "chain.json").delete();
+				new File(chainDir, "options.json").delete();
+
+				File sessionsDir = new File(chainDir, "sessions");
+				for (File session : sessionsDir.listFiles()) {
+					session.delete();
+				}
+
+				sessionsDir.delete();
+				chainDir.delete();
+
+				result = NanoHTTPD.newFixedLengthResponse(main.getInternalFileContent("manage_delete.html"));
 			}
 		}
 		return result;

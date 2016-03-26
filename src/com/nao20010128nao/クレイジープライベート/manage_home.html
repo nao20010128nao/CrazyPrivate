@@ -1,0 +1,114 @@
+﻿<html>
+<head>
+    <title>いろいろ抜き取り - 管理コンソール</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <style>
+        h2 {
+            background: #00ffff;
+            color: #0094ff;
+        }
+
+        .frame {
+            padding: 10px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .pad {
+            opacity: 0;
+        }
+
+        .pad-4btn {
+            opacity: 0;
+            width: 3px;
+        }
+
+        .content {
+            padding: 20px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .horizontal-parent {
+            display: -moz-box;
+            display: -webkit-box;
+            display: -o-box;
+            display: -ms-box;
+            box-orient: horizontal;
+            -moz-box-orient: horizontal;
+            -webkit-box-orient: horizontal;
+            -o-box-orient: horizontal;
+            -ms-box-orient: horizontal;
+        }
+
+        .horizontal-child {
+            display: -moz-box;
+            display: -webkit-box;
+            display: -o-box;
+            display: -ms-box;
+            -moz-box-orient: vertical;
+            -webkit-box-orient: vertical;
+            -o-box-orient: vertical;
+            -ms-box-orient: vertical;
+            padding-left: 3px;
+        }
+
+        .horizontal-child-button {
+            display: -moz-box;
+            display: -webkit-box;
+            display: -o-box;
+            display: -ms-box;
+            -moz-box-orient: vertical;
+            -webkit-box-orient: vertical;
+            -o-box-orient: vertical;
+            -ms-box-orient: vertical;
+        }
+    </style>
+    <script>
+        var privateKey;
+        $(function () {
+            privateKey = $("form>div>div>input#secret").val();
+        });
+        function gotoEdit() {
+            location.href = "/console/edit/" + privateKey;
+        }
+        function gotoDelete() {
+            if (confirm("削除してもよろしいですか?\n削除は直ちに適用され、元に戻すことはできません。")) {
+                location.href = "/console/delete/" + privateKey;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>管理コンソール</h2>
+    <div>
+        <h3>基本情報</h3>
+        <form class="frame">
+            <div class="horizontal-parent">
+                <div class="horizontal-child">
+                    <div>秘密鍵:</div><input id="secret" type="text" value="{SECRET}" />
+                </div>
+                <div class="horizontal-child">
+                    <div>公開鍵:</div><input id="public" type="text" value="{PUBLIC}" />
+                </div>
+                <div class="horizontal-child">
+                    <div>リンク:</div><input id="publnk" type="text" value="{PUBLNK}" />
+                </div>
+            </div>
+        </form>
+        <h3>操作</h3>
+        <form class="frame">
+            <div class="horizontal-parent">
+                <button id="edit" class="horizontal-child-button" onclick="return gotoEdit()">編集</button>
+                <div class="pad-4btn"></div>
+                <button id="delete" class="horizontal-child-button" onclick="return gotoDelete()">削除</button>
+            </div>
+        </form>
+        <h3>履歴</h3>
+        <div id="history">
+        </div>
+        <br />
+        <a href="/">トップページへ</a>
+    </div>
+</body>
+</html>

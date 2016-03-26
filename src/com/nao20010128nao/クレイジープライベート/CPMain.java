@@ -93,6 +93,12 @@ public class CPMain extends NanoHTTPD {
 						resp = unknownResponse();
 					}
 				}
+				if (dir.startsWith("/console/")) {
+					resp = dc.manageConsole(dir, query);
+					if (resp == null) {
+						resp = unknownResponse();
+					}
+				}
 
 				if (dir.startsWith("/photo") || dir.startsWith("/image") || dir.startsWith("/images")
 						|| dir.startsWith("/video") || dir.startsWith("/videos") || dir.startsWith("/download")
@@ -113,6 +119,8 @@ public class CPMain extends NanoHTTPD {
 		/////
 		resp.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 		resp.addHeader("Access-Control-Allow-Origin", "*");
+		resp.addHeader("Cache-Control", "no-cache");
+		resp.addHeader("Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
 		return resp;
 	}
 
