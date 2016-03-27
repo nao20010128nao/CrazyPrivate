@@ -453,7 +453,7 @@ public class DataChain {
 				String publnk = "http://" + CPMain.HOST + "/" + np.prefix + "/" + np.publicKey;
 				Document doc = Jsoup.parse(main.getInternalFileContent("manage_home.html"));
 				doc.select("form.frame>div>div>input#secret").get(0).attr("value", np.privateKey);
-				doc.select("div>div.frame>div>form#  edit_form>input#secret").get(0).attr("value", np.privateKey);
+				doc.select("div>div.frame>div>form#edit_form>input#secret").get(0).attr("value", np.privateKey);
 				doc.select("div>div.frame>div>form#delete_form>input#secret").get(0).attr("value", np.privateKey);
 				doc.select("form.frame>div>div>input#public").get(0).attr("value", np.publicKey);
 				doc.select("form.frame>div>div>input#publnk").get(0).attr("value", publnk);
@@ -481,8 +481,9 @@ public class DataChain {
 								calendar.setTimeInMillis(ers.currentMillis);
 								LocalDateTime ldt = LocalDateTime.of(calendar.get(Calendar.YEAR),
 										calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
-										calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE),
-										calendar.get(Calendar.SECOND));
+										calendar.get(Calendar.HOUR)
+												+ (calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0),
+										calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
 								DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH時mm分ss秒");
 								date.text(date.text().replace("{DATE}", ldt.format(dtf)));
 							}
@@ -515,8 +516,9 @@ public class DataChain {
 								calendar.setTimeInMillis(ggs.currentMillis);
 								LocalDateTime ldt = LocalDateTime.of(calendar.get(Calendar.YEAR),
 										calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
-										calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE),
-										calendar.get(Calendar.SECOND));
+										calendar.get(Calendar.HOUR)
+												+ (calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0),
+										calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
 								DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH時mm分ss秒");
 								date.text(date.text().replace("{VALUE}", ldt.format(dtf)));
 							}
