@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
@@ -140,7 +141,8 @@ public class CPMain extends NanoHTTPD {
 	public String getInternalFileContent(String name) {
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(
-					getClass().getClassLoader().getResourceAsStream("com/nao20010128nao/クレイジープライベート/" + name)));
+					getClass().getClassLoader().getResourceAsStream("com/nao20010128nao/クレイジープライベート/" + name),
+					StandardCharsets.UTF_8));
 			StringWriter sw = new StringWriter();
 			char[] bs = new char[100000];
 			int r;
