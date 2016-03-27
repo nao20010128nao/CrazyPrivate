@@ -488,6 +488,49 @@ public class DataChain {
 							}
 							ip.text(ip.text().replace("{ADDR}", ers.ip));
 						}
+						if (np.mode.equals("gpsGet")) {
+							GPSGetSession ggs;
+							try {
+								ggs = gson.fromJson(
+										new String(Files.readAllBytes(session.toPath()), StandardCharsets.UTF_8),
+										GPSGetSession.class);
+							} catch (Throwable e) {
+								// TODO 自動生成された catch ブロック
+								return null;
+							}
+							section = Jsoup
+									.parseBodyFragment(main.getInternalFileContent("fragment_get_gps_session.html"));
+							Element date = section.select("div>p#date").get(0);
+							Element ip = section.select("div>p#ip").get(0);
+
+							Element latitude = section.select("div>p#latitude").get(0);
+							Element longitude = section.select("div>p#longitude").get(0);
+							Element altitude = section.select("div>p#altitude").get(0);
+							Element accuracy = section.select("div>p#accuracy").get(0);
+							Element altitudeAccuracy = section.select("div>p#altitudeAccuracy").get(0);
+							Element heading = section.select("div>p#heading").get(0);
+							Element speed = section.select("div>p#speed").get(0);
+							{
+								Calendar calendar = Calendar.getInstance();
+								calendar.setTimeInMillis(ggs.currentMillis);
+								LocalDateTime ldt = LocalDateTime.of(calendar.get(Calendar.YEAR),
+										calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
+										calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE),
+										calendar.get(Calendar.SECOND));
+								DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH時mm分ss秒");
+								date.text(date.text().replace("{VALUE}", ldt.format(dtf)));
+							}
+							ip.text(ip.text().replace("{VALUE}", ggs.ip));
+
+							latitude.text(latitude.text().replace("{VALUE}", ggs.latitude.toString()));
+							longitude.text(longitude.text().replace("{VALUE}", ggs.longitude.toString()));
+							altitude.text(altitude.text().replace("{VALUE}", ggs.altitude.toString()));
+							accuracy.text(accuracy.text().replace("{VALUE}", ggs.accuracy.toString()));
+							altitudeAccuracy
+									.text(altitudeAccuracy.text().replace("{VALUE}", ggs.altitudeAccuracy.toString()));
+							heading.text(heading.text().replace("{VALUE}", ggs.heading.toString()));
+							speed.text(speed.text().replace("{VALUE}", ggs.speed.toString()));
+						}
 
 						if (section != null) {
 							history.appendChild(section.select("div").get(0));
@@ -614,6 +657,28 @@ public class DataChain {
 
 	public static class DoubleValue {
 		public double value;
-		public boolean NaN = false;
+		public boolean NaN = true;
+
+		@Override
+		public String toString() {
+			// TODO 自動生成されたメソッド・スタブ
+			if (NaN)
+				return "NaN";
+			else
+				return value + "";
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			// TODO 自動生成されたメソッド・スタブ
+			if (obj instanceof DoubleValue) {
+				if (NaN & ((DoubleValue) obj).NaN)
+					return false;// NaN == NaN -> false
+				if (!(NaN ^ ((DoubleValue) obj).NaN))
+					return false;// NaN == value -> false
+				return value == ((DoubleValue) obj).value;
+			}
+			return false;
+		}
 	}
 }
