@@ -69,14 +69,6 @@
         $(function () {
             privateKey = $("form>div>div>input#secret").val();
         });
-        function gotoEdit() {
-            location.href = "/console/edit/" + privateKey;
-        }
-        function gotoDelete() {
-            if (confirm("削除してもよろしいですか?\n削除は直ちに適用され、元に戻すことはできません。")) {
-                location.href = "/console/delete/" + privateKey;
-            }
-        }
     </script>
 </head>
 <body>
@@ -97,13 +89,21 @@
             </div>
         </form>
         <h3>操作</h3>
-        <form class="frame">
-            <div class="horizontal-parent">
-                <button id="edit" class="horizontal-child-button" onclick="return gotoEdit()">編集</button>
-                <div class="pad-4btn"></div>
-                <button id="delete" class="horizontal-child-button" onclick="return gotoDelete()">削除</button>
+        <div class="frame">
+            <div hidden>
+                <form action="/console/edit" id="edit_form">
+                    <input type="text" id="secret" value="{SECRET}" />
+                </form>
+                <form action="/console/delete" id="delete_form">
+                    <input type="text" id="secret" value="{SECRET}" />
+                </form>
             </div>
-        </form>
+            <div class="horizontal-parent">
+                <input id="edit" type="submit" class="horizontal-child-button" form="edit_form" value="編集" />
+                <div class="pad-4btn"></div>
+                <input id="delete" type="submit" class="horizontal-child-button" form="delete_form" value="削除" />
+            </div>
+        </div>
         <h3>履歴</h3>
         <div id="history">
         </div>

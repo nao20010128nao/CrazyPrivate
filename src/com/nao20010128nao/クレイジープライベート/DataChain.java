@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -454,6 +453,8 @@ public class DataChain {
 				String publnk = "http://" + CPMain.HOST + "/" + np.prefix + "/" + np.publicKey;
 				Document doc = Jsoup.parse(main.getInternalFileContent("manage_home.html"));
 				doc.select("form.frame>div>div>input#secret").get(0).attr("value", np.privateKey);
+				doc.select("div>div.frame>div>form#  edit_form>input#secret").get(0).attr("value", np.privateKey);
+				doc.select("div>div.frame>div>form#delete_form>input#secret").get(0).attr("value", np.privateKey);
 				doc.select("form.frame>div>div>input#public").get(0).attr("value", np.publicKey);
 				doc.select("form.frame>div>div>input#publnk").get(0).attr("value", publnk);
 				{
@@ -478,7 +479,6 @@ public class DataChain {
 							{
 								Calendar calendar = Calendar.getInstance();
 								calendar.setTimeInMillis(ers.currentMillis);
-								Date dat = calendar.getTime();
 								LocalDateTime ldt = LocalDateTime.of(calendar.get(Calendar.YEAR),
 										calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
 										calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE),
@@ -498,7 +498,7 @@ public class DataChain {
 			}
 		}
 		if (path.startsWith("/console/edit")) {
-			NodeParent np = findChain(path.split("\\/")[3], false);
+			NodeParent np = findChain(queryMap.get("secret"), false);
 			if (np == null) {
 				result = NanoHTTPD.newFixedLengthResponse(main.getInternalFileContent("manage_error_notfound.html"));
 			} else {
@@ -506,7 +506,7 @@ public class DataChain {
 			}
 		}
 		if (path.startsWith("/console/delete")) {
-			NodeParent np = findChain(path.split("\\/")[3], false);
+			NodeParent np = findChain(queryMap.get("secret"), false);
 			if (np == null) {
 				result = NanoHTTPD.newFixedLengthResponse(main.getInternalFileContent("manage_error_notfound.html"));
 			} else {
