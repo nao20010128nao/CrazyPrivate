@@ -547,7 +547,69 @@ public class DataChain {
 			if (np == null) {
 				result = NanoHTTPD.newFixedLengthResponse(main.getInternalFileContent("manage_error_notfound.html"));
 			} else {
+				File chainDir = new File(FILES_DIR, np.publicKey);
+				if (np.mode.equals("easyRedirect")) {
+					EasyRedirectOptions ero;
+					try {
+						ero = gson.fromJson(new String(Files.readAllBytes(new File(chainDir, "options.json").toPath())),
+								EasyRedirectOptions.class);
+					} catch (Throwable e) {
+						return null;
+					}
+					Document editDoc = Jsoup.parse(main.getInternalFileContent("manage_edit_easy_redirect.html"));
+					editDoc.select("form.content>input[name=\"address\"]").get(0).attr("value", ero.address);
 
+					result = NanoHTTPD.newFixedLengthResponse(editDoc.html());
+				}
+				if (np.mode.equals("gpsGet")) {
+					GPSGetOptions ggo;
+					try {
+						ggo = gson.fromJson(new String(Files.readAllBytes(new File(chainDir, "options.json").toPath())),
+								GPSGetOptions.class);
+					} catch (Throwable e) {
+						return null;
+					}
+					Document editDoc = Jsoup.parse(main.getInternalFileContent("manage_edit_gps_get.html"));
+					editDoc.select("form.content>input[name=\"address\"]").get(0).attr("value", ggo.address);
+					editDoc.select("form.content>input[name=\"close\"]").get(0).attr("checked",
+							ggo.close ? "on" : "off");
+					editDoc.select("form.content>select[name=\"path\"]>option[value=\"" + np.prefix + "\"]").get(0)
+							.attr("selected", true);
+					editDoc.select("form.content>input[name=\"title\"]").get(0).attr("value", ggo.title);
+					editDoc.select("form.content>input[name=\"message\"]").get(0).text(ggo.message);
+					editDoc.select("form.content>input[name=\"gps_message\"]").get(0).text(ggo.gps_message);
+					editDoc.select("form.content>input[name=\"gps_button\"]").get(0).attr("value", ggo.gps_button);
+
+					result = NanoHTTPD.newFixedLengthResponse(editDoc.html());
+				}
+			}
+		}
+		if (path.startsWith("/console/apply")) {
+			NodeParent np = findChain(queryMap.get("secret"), false);
+			if (np == null) {
+				result = NanoHTTPD.newFixedLengthResponse(main.getInternalFileContent("manage_error_notfound.html"));
+			} else {
+				File chainDir = new File(FILES_DIR, np.publicKey);
+				if (np.mode.equals("easyRedirect")) {
+					EasyRedirectOptions ero;
+					try {
+						ero = gson.fromJson(new String(Files.readAllBytes(new File(chainDir, "options.json").toPath())),
+								EasyRedirectOptions.class);
+					} catch (Throwable e) {
+						return null;
+					}
+
+				}
+				if (np.mode.equals("gpsGet")) {
+					GPSGetOptions ggo;
+					try {
+						ggo = gson.fromJson(new String(Files.readAllBytes(new File(chainDir, "options.json").toPath())),
+								GPSGetOptions.class);
+					} catch (Throwable e) {
+						return null;
+					}
+
+				}
 			}
 		}
 		if (path.startsWith("/console/delete")) {
