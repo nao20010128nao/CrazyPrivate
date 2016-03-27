@@ -68,7 +68,7 @@
         var privateKey;
         $(function () {
             privateKey = $("form>div>div>input#secret").val();
-        });
+       });
     </script>
 </head>
 <body>
@@ -92,10 +92,10 @@
         <div class="frame">
             <div hidden>
                 <form action="/console/edit" id="edit_form">
-                    <input type="text" id="secret" value="{SECRET}" />
+                    <input type="text" name="secret" />
                 </form>
                 <form action="/console/delete" id="delete_form">
-                    <input type="text" id="secret" value="{SECRET}" />
+                    <input type="text" name="secret" />
                 </form>
             </div>
             <div class="horizontal-parent">

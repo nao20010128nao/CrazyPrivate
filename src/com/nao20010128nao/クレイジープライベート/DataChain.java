@@ -453,8 +453,10 @@ public class DataChain {
 				String publnk = "http://" + CPMain.HOST + "/" + np.prefix + "/" + np.publicKey;
 				Document doc = Jsoup.parse(main.getInternalFileContent("manage_home.html"));
 				doc.select("form.frame>div>div>input#secret").get(0).attr("value", np.privateKey);
-				doc.select("div>div.frame>div>form#edit_form>input#secret").get(0).attr("value", np.privateKey);
-				doc.select("div>div.frame>div>form#delete_form>input#secret").get(0).attr("value", np.privateKey);
+				doc.select("div>div.frame>div>form#edit_form>input[name=\"secret\"]").get(0).attr("value",
+						np.privateKey);
+				doc.select("div>div.frame>div>form#delete_form>input[name=\"secret\"]").get(0).attr("value",
+						np.privateKey);
 				doc.select("form.frame>div>div>input#public").get(0).attr("value", np.publicKey);
 				doc.select("form.frame>div>div>input#publnk").get(0).attr("value", publnk);
 				{
@@ -571,13 +573,13 @@ public class DataChain {
 					}
 					Document editDoc = Jsoup.parse(main.getInternalFileContent("manage_edit_gps_get.html"));
 					editDoc.select("form.content>input[name=\"address\"]").get(0).attr("value", ggo.address);
-					editDoc.select("form.content>input[name=\"close\"]").get(0).attr("checked",
+					editDoc.select("form.content>div>input[name=\"close\"]").get(0).attr("checked",
 							ggo.close ? "on" : "off");
 					editDoc.select("form.content>select[name=\"path\"]>option[value=\"" + np.prefix + "\"]").get(0)
 							.attr("selected", true);
 					editDoc.select("form.content>input[name=\"title\"]").get(0).attr("value", ggo.title);
-					editDoc.select("form.content>input[name=\"message\"]").get(0).text(ggo.message);
-					editDoc.select("form.content>input[name=\"gps_message\"]").get(0).text(ggo.gps_message);
+					editDoc.select("form.content>textarea[name=\"message\"]").get(0).text(ggo.message);
+					editDoc.select("form.content>textarea[name=\"gps_message\"]").get(0).text(ggo.gps_message);
 					editDoc.select("form.content>input[name=\"gps_button\"]").get(0).attr("value", ggo.gps_button);
 
 					result = NanoHTTPD.newFixedLengthResponse(editDoc.html());
