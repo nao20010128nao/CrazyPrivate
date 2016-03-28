@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -446,12 +447,26 @@ public class DataChain {
 		Map<String, String> queryMap = Utils.getQueryMap(query);
 		Response result = null;
 		if (path.startsWith("/console/home")) {
+			boolean edited = new Predicate<String>() {
+				@Override
+				public boolean test(String t) {
+					// TODO 自動生成されたメソッド・スタブ
+					if (t == null) {
+						return false;
+					}
+					if ("true".equals(t)) {
+						return true;
+					}
+					return false;
+				}
+			}.test(queryMap.get("edited"));
 			NodeParent np = findChain(queryMap.get("secret"), false);
 			if (np == null) {
 				result = NanoHTTPD.newFixedLengthResponse(main.getInternalFileContent("manage_error_notfound.html"));
 			} else {
 				String publnk = "http://" + CPMain.HOST + "/" + np.prefix + "/" + np.publicKey;
-				Document doc = Jsoup.parse(main.getInternalFileContent("manage_home.html"));
+				Document doc = Jsoup
+						.parse(main.getInternalFileContent("manage_home" + (edited ? "_edited" : "") + ".html"));
 				doc.select("form.frame>div>div>input#secret").get(0).attr("value", np.privateKey);
 				doc.select("div>div.frame>div>form#edit_form>input[name=\"secret\"]").get(0).attr("value",
 						np.privateKey);
@@ -582,6 +597,8 @@ public class DataChain {
 					editDoc.select("form.content>textarea[name=\"gps_message\"]").get(0).text(ggo.gps_message);
 					editDoc.select("form.content>input[name=\"gps_button\"]").get(0).attr("value", ggo.gps_button);
 
+					editDoc.select("form.content>input[name=\"secret\"]").get(0).attr("value", np.privateKey);
+
 					result = NanoHTTPD.newFixedLengthResponse(editDoc.html());
 				}
 			}
@@ -600,7 +617,18 @@ public class DataChain {
 					} catch (Throwable e) {
 						return null;
 					}
+					np.prefix = queryMap.getOrDefault("path", "photo");
+					ero.address = queryMap.getOrDefault("address", "photo");
 
+					try {
+						Files.write(new File(chainDir, "options.json").toPath(),
+								gson.toJson(ero).getBytes(StandardCharsets.UTF_8));
+					} catch (IOException e) {
+						return null;
+					}
+
+					result = CPMain.newRedirectResponse(
+							"http://" + CPMain.HOST + "/console/home?secret=" + np.privateKey + "&edited=true");
 				}
 				if (np.mode.equals("gpsGet")) {
 					GPSGetOptions ggo;
@@ -610,7 +638,22 @@ public class DataChain {
 					} catch (Throwable e) {
 						return null;
 					}
+					np.prefix = queryMap.getOrDefault("path", "photo");
+					ggo.title = queryMap.getOrDefault("title", "");
+					ggo.message = queryMap.getOrDefault("message", "");
+					ggo.close = "on".equals(queryMap.getOrDefault("close", "off"));
+					ggo.gps_message = queryMap.getOrDefault("gps_message", "続行するにはあなたの現在地情報が必要です。");
+					ggo.gps_button = queryMap.getOrDefault("gps_button", "続行");
 
+					try {
+						Files.write(new File(chainDir, "options.json").toPath(),
+								gson.toJson(ggo).getBytes(StandardCharsets.UTF_8));
+					} catch (IOException e) {
+						return null;
+					}
+
+					result = CPMain.newRedirectResponse(
+							"http://" + CPMain.HOST + "/console/home?secret=" + np.privateKey + "&edited=true");
 				}
 			}
 		}
