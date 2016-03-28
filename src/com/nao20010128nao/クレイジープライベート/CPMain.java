@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.gson.Gson;
 
@@ -190,7 +191,7 @@ public class CPMain extends NanoHTTPD {
 								getClass().getClassLoader().getResourceAsStream(
 										"com/nao20010128nao/クレイジープライベート/lang/" + lang + "/" + name),
 								StandardCharsets.UTF_8));
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				br = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(
 						"com/nao20010128nao/クレイジープライベート/lang/common/" + name), StandardCharsets.UTF_8));
 			}
@@ -242,7 +243,8 @@ public class CPMain extends NanoHTTPD {
 			try {
 				is = getClass().getClassLoader()
 						.getResourceAsStream("com/nao20010128nao/クレイジープライベート/lang/" + lang + "/" + name);
-			} catch (Exception e) {
+				Objects.requireNonNull(is);
+			} catch (Throwable e) {
 				is = getClass().getClassLoader()
 						.getResourceAsStream("com/nao20010128nao/クレイジープライベート/lang/common/" + name);
 			}
