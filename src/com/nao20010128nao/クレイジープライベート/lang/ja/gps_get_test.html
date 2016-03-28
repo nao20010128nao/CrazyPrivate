@@ -1,0 +1,53 @@
+﻿<html>
+<head>
+    <title>{TITLE}</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <style>
+        h2.title {
+            background: #00ffff;
+            color: #0094ff;
+        }
+
+        .frame {
+            padding: 10px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .pad {
+            opacity: 0;
+        }
+
+        .content {
+            padding: 20px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .enablejs {
+            font-size: 25px;
+            color: red;
+        }
+    </style>
+    <script>
+        $(function () {
+            $("p.enablejs").hide();
+            $("p.reqire_gps").show();
+            $("button#gps_get").show();
+        });
+    </script>
+</head>
+<body>
+    <h2>先程入力したテキストは、このように表示されます。</h2>
+    <br />
+    <h2 class="title">{TITLE}</h2>
+    <div>
+        <h3>{MESSAGE}</h3>
+        <div class="frame">
+            <p class="enablejs">エラー:Javascriptを有効化して下さい。</p>
+            <p class="reqire_gps" hidden>{GPS_MESSAGE}</p>
+            <button id="gps_get" hidden onclick="return window.history.back(-1) & 0;">{GPS_BUTTON}</button>
+        </div>
+    </div>
+</body>
+</html>

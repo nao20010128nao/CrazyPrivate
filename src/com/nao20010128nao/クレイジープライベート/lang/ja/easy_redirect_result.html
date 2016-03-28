@@ -1,0 +1,43 @@
+﻿<html>
+<head>
+    <title>いろいろ抜き取り - 転送型</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <style>
+        h2 {
+            background: #00ffff;
+            color: #0094ff;
+        }
+
+        .frame {
+            padding: 10px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .pad {
+            opacity: 0;
+        }
+
+        .content {
+            padding: 20px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+    </style>
+</head>
+<body>
+    <h2>転送型</h2>
+    <div>
+        <h3>状況を確認したり、管理するために必要な情報です。</h3>
+        <div class="frame">
+            <form class="content">
+                <div>秘密鍵(他人に知られないように保管してください):</div><input id="address" type="text" value="{SECRET}" />
+                <div>公開鍵(アドレスに含まれます):</div><input id="address" type="text" value="{PUBLIC}" />
+                <div>相手に踏ませるリンク:</div><input id="address" type="text" value="{PUBLNK}" />
+                <div>このページをブックマークすれば、いつでもこの情報を参照できます。</div>
+            </form>
+            <a href="/">トップページへ</a>
+        </div>
+    </div>
+</body>
+</html>

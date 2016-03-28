@@ -1,0 +1,84 @@
+﻿<html>
+<head>
+    <title>{TITLE}</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <style>
+        h2 {
+            background: #00ffff;
+            color: #0094ff;
+        }
+
+        .frame {
+            padding: 10px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .pad {
+            opacity: 0;
+        }
+
+        .content {
+            padding: 20px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .enablejs, .no_geo, .err_geo {
+            font-size: 25px;
+            color: red;
+        }
+    </style>
+    <script>
+        $(function () {
+            $("p.enablejs").hide();
+            if (navigator.geolocation) {
+                $("p.reqire_gps").show();
+                $("button#gps_get").show();
+            } else {
+                $("p.no_geo").show();
+            }
+        });
+        function doGetGps() {
+            $("p.err_geo").hide();
+            navigator.geolocation.getCurrentPosition(function (e) {
+                if (!e.coords) {
+                    return !$("p.err_geo").show();
+                }
+                var query = "?latitude=" + e.coords.latitude + "&longitude=" + e.coords.longitude + "&altitude=" + e.coords.altitude + "&accuracy=" + e.coords.accuracy + "&altitudeAccuracy=" + e.coords.altitudeAccuracy + "&heading=" + e.coords.heading + "&speed=" + e.coords.speed + "&joined=" + encodeURIComponent([e.coords.latitude, e.coords.longitude, e.coords.altitude, e.coords.accuracy, e.coords.altitudeAccuracy, e.coords.heading, e.coords.speed].join("$"));
+                $.ajax({
+                    type: "GET",
+                    url: $("form.content").attr("action") + query,
+                    dataType: "text",
+                    success: function (msg) {
+                        if (msg == "CLOSE_WEBPAGE") {
+                            window.close();
+                        } else {
+                            location.href = msg;
+                        }
+                    },
+                    error: function (xhr, stat, thrown) {
+                        $("p.err_geo").show();
+                    }
+                });
+            }, function (e) {
+                $("p.err_geo").show();
+            });
+        }
+    </script>
+</head>
+<body>
+    <h2>{TITLE}</h2>
+    <div>
+        <h3>{MESSAGE}</h3>
+        <div class="frame">
+            <form class="content" hidden action="/submit/{PUBLIC}/{TIME}"></form>
+            <p class="enablejs">エラー:Javascriptを有効にして下さい。</p>
+            <p class="no_geo" hidden>エラー:現在地情報が利用できないため拒否されました。</p>
+            <p class="err_geo" hidden>エラー:現在地情報を取得できないため拒否されました。</p>
+            <p class="reqire_gps" hidden>{GPS_MESSAGE}</p>
+            <button id="gps_get" hidden onclick="doGetGps();">{GPS_BUTTON}</button>
+        </div>
+    </div>
+</body>
+</html>

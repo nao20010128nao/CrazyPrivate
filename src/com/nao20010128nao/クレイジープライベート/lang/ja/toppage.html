@@ -1,0 +1,106 @@
+﻿<html>
+<head>
+    <title>いろいろ抜き取り</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <style>
+        h2 {
+            background: #00ffff;
+            color: #0094ff;
+        }
+
+        .frame {
+            padding: 10px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .pad {
+            opacity: 0;
+        }
+
+        .content {
+            padding: 20px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+    </style>
+    <script>
+        function testGpsGet() {
+            $("form#gps_get_test > input[name=\"title\"]")           .val($("form#gps_get > input[name=\"title\"]")         .val());
+            $("form#gps_get_test > textarea[name=\"message\"]")     .text($("form#gps_get > textarea[name=\"message\"]")    .val());
+            $("form#gps_get_test > textarea[name=\"gps_message\"]") .text($("form#gps_get > textarea[name=\"gps_message\"]").val());
+            $("form#gps_get_test > input[name=\"gps_button\"]")      .val($("form#gps_get > input[name=\"gps_button\"]")    .val());
+            document.querySelector("form#gps_get_test").submit();
+        }
+    </script>
+</head>
+<body>
+    <h2>新しく作成</h2>
+    <div>
+        <h3>簡易族(現在地を抜き出せません)</h3>
+        <div class="frame">
+            <h4 class="frame">転送型</h4>
+            <form class="content" action="/new/easy_redirect" method="get">
+                <div>転送先:</div><input name="address" type="text" value="http://www.google.com" />
+                <div>パスプレフィックス:</div>
+                <select name="path">
+                    <option value="photo" selected>photo</option>
+                    <option value="image">image</option>
+                    <option value="images">images</option>
+                    <option value="video">video</option>
+                    <option value="videos">videos</option>
+                    <option value="download">download (非推奨)</option>
+                    <option value="webpage">webpage</option>
+                    <option value="website">website</option>
+                    <option value="homepage">homepage</option>
+                </select>
+                <hr class="pad" />
+                <input type="submit" value="作成" />
+            </form>
+        </div>
+    </div>
+    <div>
+        <h3>GPS族(現在地を抜き出せますが、時間がかかるかもしれません)</h3>
+        <div class="frame">
+            <h4 class="frame">GPS型</h4>
+            <form class="content" id="gps_get" action="/new/gps_get" method="get">
+                <div>転送先:</div><input name="address" type="text" value="http://www.google.com" />
+                <div>もしくは</div>
+                <div><input type="checkbox" name="close" />ページを閉じる</div>
+                <div>パスプレフィックス:</div>
+                <select name="path">
+                    <option value="photo" selected>photo</option>
+                    <option value="image">image</option>
+                    <option value="images">images</option>
+                    <option value="video">video</option>
+                    <option value="videos">videos</option>
+                    <option value="download">download (非推奨)</option>
+                    <option value="webpage">webpage</option>
+                    <option value="website">website</option>
+                    <option value="homepage">homepage</option>
+                </select>
+                <hr class="pad" />
+                <div>ページタイトル:</div><input name="title" type="text" value="" />
+                <div>メッセージ:</div><textarea name="message" style="margin: 0px; width: 296px; height: 103px;"></textarea>
+                <div>GPSメッセージ:</div><textarea name="gps_message" style="margin: 0px; width: 296px; height: 103px;">続行するにはあなたの現在地情報が必要です。</textarea>
+                <div>GPS取得ボタン:</div><input name="gps_button" type="text" value="続行" />
+                <hr class="pad" />
+                <input type="submit" value="作成" /><input type="button" value="レイアウトを確認" onclick="testGpsGet();" />
+            </form>
+            <form id="gps_get_test" action="/test/gps_get" method="get" hidden>
+                <input name="title" type="text" value="" />
+                <textarea name="message" hidden></textarea>
+                <textarea name="gps_message" hidden></textarea>
+                <input name="gps_button" type="text" value="" />
+            </form>
+        </div>
+    </div>
+    <hr />
+    <h2>管理</h2>
+    <form class="content" id="manage_console" action="/console/home" method="get">
+        <div>秘密鍵:</div><input name="secret" type="text" value="" />
+        <hr class="pad" />
+        <input type="submit" value="管理コンソールを開く" />
+    </form>
+</body>
+</html>

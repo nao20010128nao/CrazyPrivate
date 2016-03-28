@@ -25,7 +25,7 @@ import fi.iki.elonen.NanoHTTPD.Response;
 
 public class DataChain {
 	static final List<String> GPS_NULL_VALUES = Arrays.asList("undefined", "NaN", "", "null", "0", null);
-	static final File FILES_DIR = new File("files");
+	static final File FILES_DIR = new File(CPMain.CURRENT_DIRECTORY, "files");
 	static final String ALPHABET_SMALL = "abcdefghijklmnopqrstuvwxyz_-";
 	static final String RANDOM_CHARS = ALPHABET_SMALL + ALPHABET_SMALL.toUpperCase() + ALPHABET_SMALL
 			+ ALPHABET_SMALL.toUpperCase();
@@ -70,7 +70,7 @@ public class DataChain {
 			}
 			dir = new File(dir, "sessions");
 			dir.mkdirs();
-			result = CPMain.newRedirectResponse("http://" + CPMain.HOST + "/yourtrace?private=" + np.privateKey);
+			result = CPMain.newRedirectResponse("http://" + main.HOST + "/yourtrace?private=" + np.privateKey);
 		}
 		if (path.startsWith("/new/gps_get")) {
 			// GPS型
@@ -92,8 +92,8 @@ public class DataChain {
 			opt.title = queryMap.getOrDefault("title", "");
 			opt.message = queryMap.getOrDefault("message", "");
 			opt.close = "on".equals(queryMap.getOrDefault("close", "off"));
-			opt.gps_message = queryMap.getOrDefault("gps_message", "続行するにはあなたの現在地情報が必要です。");
-			opt.gps_button = queryMap.getOrDefault("gps_button", "続行");
+			opt.gps_message = queryMap.getOrDefault("gps_message", main.text.get("gps_get.gps_message"));
+			opt.gps_button = queryMap.getOrDefault("gps_button", main.text.get("gps_get.gps_button"));
 			json = gson.toJson(opt, GPSGetOptions.class);
 			try {
 				Files.write(new File(dir, "options.json").toPath(), json.getBytes(StandardCharsets.UTF_8));
@@ -102,14 +102,14 @@ public class DataChain {
 			}
 			dir = new File(dir, "sessions");
 			dir.mkdirs();
-			result = CPMain.newRedirectResponse("http://" + CPMain.HOST + "/yourtrace?private=" + np.privateKey);
+			result = CPMain.newRedirectResponse("http://" + main.HOST + "/yourtrace?private=" + np.privateKey);
 		}
 		if (path.startsWith("/test/gps_get")) {
 			// GPS型(テストページ)
 			final String title = queryMap.getOrDefault("title", "");
 			final String message = queryMap.getOrDefault("message", "");
-			final String gps_message = queryMap.getOrDefault("gps_message", "続行するにはあなたの現在地情報が必要です。");
-			final String gps_button = queryMap.getOrDefault("gps_button", "続行");
+			final String gps_message = queryMap.getOrDefault("gps_message", main.text.get("gps_get.gps_message"));
+			final String gps_button = queryMap.getOrDefault("gps_button", main.text.get("gps_get.gps_button"));
 
 			String s = main.getInternalFileContent("gps_get_test.html");
 			Document doc = Jsoup.parse(s);
@@ -136,13 +136,13 @@ public class DataChain {
 			}
 			if (np.mode.equals("easyRedirect")) {
 				String s = main.getInternalFileContent("easy_redirect_result.html");
-				String url = "http://" + CPMain.HOST + "/" + np.prefix + "/" + np.publicKey;
+				String url = "http://" + main.HOST + "/" + np.prefix + "/" + np.publicKey;
 				s = s.replace("{PUBLNK}", url).replace("{PUBLIC}", np.publicKey).replace("{SECRET}", np.privateKey);
 				result = NanoHTTPD.newFixedLengthResponse(s);
 			}
 			if (np.mode.equals("gpsGet")) {
 				String s = main.getInternalFileContent("gps_get_result.html");
-				String url = "http://" + CPMain.HOST + "/" + np.prefix + "/" + np.publicKey;
+				String url = "http://" + main.HOST + "/" + np.prefix + "/" + np.publicKey;
 				s = s.replace("{PUBLNK}", url).replace("{PUBLIC}", np.publicKey).replace("{SECRET}", np.privateKey);
 				result = NanoHTTPD.newFixedLengthResponse(s);
 			}
@@ -464,7 +464,7 @@ public class DataChain {
 			if (np == null) {
 				result = NanoHTTPD.newFixedLengthResponse(main.getInternalFileContent("manage_error_notfound.html"));
 			} else {
-				String publnk = "http://" + CPMain.HOST + "/" + np.prefix + "/" + np.publicKey;
+				String publnk = "http://" + main.HOST + "/" + np.prefix + "/" + np.publicKey;
 				Document doc = Jsoup
 						.parse(main.getInternalFileContent("manage_home" + (edited ? "_edited" : "") + ".html"));
 				doc.select("form.frame>div>div>input#secret").get(0).attr("value", np.privateKey);
@@ -501,7 +501,8 @@ public class DataChain {
 										calendar.get(Calendar.HOUR)
 												+ (calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0),
 										calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
-								DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH時mm分ss秒");
+								DateTimeFormatter dtf = DateTimeFormatter
+										.ofPattern(main.text.get("console.edit.date_format"));
 								date.text(date.text().replace("{DATE}", ldt.format(dtf)));
 							}
 							ip.text(ip.text().replace("{ADDR}", ers.ip));
@@ -536,7 +537,8 @@ public class DataChain {
 										calendar.get(Calendar.HOUR)
 												+ (calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0),
 										calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
-								DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH時mm分ss秒");
+								DateTimeFormatter dtf = DateTimeFormatter
+										.ofPattern(main.text.get("console.edit.date_format"));
 								date.text(date.text().replace("{VALUE}", ldt.format(dtf)));
 							}
 							ip.text(ip.text().replace("{VALUE}", ggs.ip));
@@ -627,7 +629,7 @@ public class DataChain {
 					}
 
 					result = CPMain.newRedirectResponse(
-							"http://" + CPMain.HOST + "/console/home?secret=" + np.privateKey + "&edited=true");
+							"http://" + main.HOST + "/console/home?secret=" + np.privateKey + "&edited=true");
 				}
 				if (np.mode.equals("gpsGet")) {
 					GPSGetOptions ggo;
@@ -653,7 +655,7 @@ public class DataChain {
 					}
 
 					result = CPMain.newRedirectResponse(
-							"http://" + CPMain.HOST + "/console/home?secret=" + np.privateKey + "&edited=true");
+							"http://" + main.HOST + "/console/home?secret=" + np.privateKey + "&edited=true");
 				}
 			}
 		}

@@ -3,11 +3,18 @@ package com.nao20010128nao.クレイジープライベート;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import com.google.gson.Gson;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
@@ -15,12 +22,48 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
 public class CPMain extends NanoHTTPD {
-	public static final String HOST = "localhost:8080";
+	public static File CURRENT_DIRECTORY = new File(System.getProperty("user.dir"));
+	public static final List<String> ACCEPTED_LANGUAGES = Arrays.asList("ja", "en");
+	public final String HOST;
 	DataChain dc = new DataChain(this);
+	Config cfg;
+	Gson gson = new Gson();
+	File configDir = new File(new File(CURRENT_DIRECTORY, "files"), "config.json");
+	public final String lang;
+	public final Config text;
 
 	public CPMain(int port) throws IOException {
 		super(port);
 		// TODO 自動生成されたコンストラクター・スタブ
+		if (configDir.exists()) {
+			System.out.println("Loading config...");
+			try {
+				cfg = gson.fromJson(new String(Files.readAllBytes(configDir.toPath()), "UTF-8"), Config.class);
+			} catch (Throwable e) {
+				// TODO 自動生成された catch ブロック
+				e.printStackTrace();
+				System.err.println("Error!");
+				cfg = new Config();
+				cfg.put("lang", "ja");
+				cfg.put("host", "localhost:8080");
+			}
+		} else {
+			cfg = new Config();
+			cfg.put("lang", "ja");
+			cfg.put("host", "localhost:8080");
+		}
+		try {
+			Files.write(configDir.toPath(), gson.toJson(cfg).getBytes(StandardCharsets.UTF_8));
+		} catch (Throwable e) {
+
+		}
+		lang = cfg.get("lang");
+		HOST = cfg.get("host");
+		text = gson.fromJson(getInternalFileContent("defaults.json"), Config.class);
+		if (!ACCEPTED_LANGUAGES.contains(lang)) {
+			System.err.println("Unsupported language: " + lang);
+			System.exit(1);
+		}
 		start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
 	}
 
@@ -140,9 +183,17 @@ public class CPMain extends NanoHTTPD {
 
 	public String getInternalFileContent(String name) {
 		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(
-					getClass().getClassLoader().getResourceAsStream("com/nao20010128nao/クレイジープライベート/" + name),
-					StandardCharsets.UTF_8));
+			BufferedReader br;
+			try {
+				br = new BufferedReader(
+						new InputStreamReader(
+								getClass().getClassLoader().getResourceAsStream(
+										"com/nao20010128nao/クレイジープライベート/lang/" + lang + "/" + name),
+								StandardCharsets.UTF_8));
+			} catch (Exception e) {
+				br = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(
+						"com/nao20010128nao/クレイジープライベート/lang/common/" + name), StandardCharsets.UTF_8));
+			}
 			StringWriter sw = new StringWriter();
 			char[] bs = new char[100000];
 			int r;
@@ -187,7 +238,14 @@ public class CPMain extends NanoHTTPD {
 	Entry getInternalFile(String name) {
 		try {
 			Entry ent = new Entry();
-			InputStream is = getClass().getClassLoader().getResourceAsStream("com/nao20010128nao/クレイジープライベート/" + name);
+			InputStream is;
+			try {
+				is = getClass().getClassLoader()
+						.getResourceAsStream("com/nao20010128nao/クレイジープライベート/lang/" + lang + "/" + name);
+			} catch (Exception e) {
+				is = getClass().getClassLoader()
+						.getResourceAsStream("com/nao20010128nao/クレイジープライベート/lang/common/" + name);
+			}
 			ByteArrayOutputStream bais = new ByteArrayOutputStream();
 			byte[] bs = new byte[100000];
 			int r;
@@ -217,5 +275,9 @@ public class CPMain extends NanoHTTPD {
 	class Entry {
 		long size;
 		InputStream stream;
+	}
+
+	public static class Config extends HashMap<String, String> {
+
 	}
 }

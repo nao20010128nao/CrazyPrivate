@@ -1,0 +1,57 @@
+﻿<html>
+<head>
+    <title>いろいろ抜き取り - 編集</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <style>
+        h2 {
+            background: #00ffff;
+            color: #0094ff;
+        }
+
+        .frame {
+            padding: 10px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .pad {
+            opacity: 0;
+        }
+
+        .content {
+            padding: 20px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+    </style>
+    <script>
+    </script>
+</head>
+<body>
+    <h2>編集</h2>
+    <div>
+        <h3>以下の内容を適宜編集して下さい。</h3>
+        <div class="frame">
+            <h4 class="frame">転送型</h4>
+            <form class="content" action="/console/apply" method="get">
+                <div>転送先:</div><input name="address" type="text" value="{DATA}" />
+                <div>パスプレフィックス:</div>
+                <select name="path">
+                    <option value="photo">photo</option>
+                    <option value="image">image</option>
+                    <option value="images">images</option>
+                    <option value="video">video</option>
+                    <option value="videos">videos</option>
+                    <option value="download">download (非推奨)</option>
+                    <option value="webpage">webpage</option>
+                    <option value="website">website</option>
+                    <option value="homepage">homepage</option>
+                </select>
+                <hr class="pad" />
+                <input type="submit" value="適用" />
+                <input type="hidden" id="secret" value="{SECRET}" />
+            </form>
+        </div>
+    </div>
+</body>
+</html>

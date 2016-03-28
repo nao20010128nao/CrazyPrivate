@@ -1,0 +1,333 @@
+﻿<!DOCTYPE html>
+
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Browser Test</title>
+    <script type="text/javascript"
+            src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <style>
+        .bc_sucess {
+            color: green;
+        }
+
+        .bc_fail {
+            color: red;
+        }
+
+        .bc_atte {
+            color: darkred;
+        }
+    </style>
+</head>
+<body>
+    <div id="checkcorner">
+        <br />
+        <div id="dom_make">DOMツリーの操作:ノードの生成</div>
+        <div id="dom_delete">DOMツリーの操作:ノードの削除</div>
+        <div id="cb_manage">クリップボードの操作:クリップボードの読み書き</div>
+        <div id="ls_manage">ローカルストレージ:ローカルストレージの読み書き</div>
+        <div id="ss_manage">セッションストレージ:セッションストレージの読み書き</div>
+        <div id="gp_read">現在地取得:現在地の取得</div>
+        <div id="ck_manage">Cookie:Cookieの読み書き</div>
+        <div id="aj_sync">Ajax:同期通信</div>
+        <div id="aj_async">Ajax:非同期通信</div>
+        <div id="aj_sync_cd">Ajax:同期通信(クロスドメイン)</div>
+        <div id="aj_async_cd">Ajax:非同期通信(クロスドメイン)</div>
+        <div id="ww_manage">Web Worker:非同期処理</div>
+        <div id="vibrate_test">バイブレーション:バイブレーション</div>
+        <div hidden="" id="dom_testarea"></div>
+        <div hidden="" id="gp_alert" style="color: red; font-size: 20px;">
+            <b>
+                現在地の取得を許可して下さい。<br />このプログラムは現在地情報を使用する事はありません。
+            </b>
+        </div>
+        <button id="start">開始</button>
+        <button id="reset">リセット</button>
+        <!--<button onclick="update()">無移動更新</button>-->
+        <script>
+            $("button#start").click(function () {
+                reset();
+                start();
+            });
+            $("button#reset").click(function () {
+                reset();
+            });
+            var getdata = "/blogcopies/browsertest.html";
+            var data = [12, 34, 90, 53, 64, 1, 4, 742, 631, 900, 7, 98, 35, 56];
+            function update() {
+                function Last(arr) {
+                    return arr[arr.length - 1];
+                }
+                var dirandfn = Last(location.href.split(location.host));
+                $.ajax({
+                    cache: false,
+                    dataType: "text",
+                    error: function (a, b, c) {
+                        alert("更新に失敗しました。\nブラウザー側からウェブページを更新して下さい。");
+                    },
+                    success: function (a, b) {
+                        alert($(a).find("#checkcorner").text());
+                        alert($("div#checkcorner", a).text());
+                    },
+                    type: "GET",
+                    url: dirandfn
+                })
+            }
+            function reset() {
+                $(".bc_sucess").toggleClass("bc_sucess");
+                $(".bc_fail").toggleClass("bc_fail");
+                $(".bc_atte").toggleClass("bc_atte");
+            }
+            function createXMLHttpRequest(a, e, i) {
+                if (XMLHttpRequest)
+                    return new XMLHttpRequest();
+                if (ActiveXObject) {
+                    a = "Msxml2.XMLHTTP.";
+                    a = ["Microsoft.XMLHTTP", a + "3.0", a + "6.0"];
+                    for (i = 3; i--;) {
+                        try {
+                            return new ActiveXObject(a[i]);
+                        } catch (e) {
+                        }
+                    }
+                }
+                return null;
+            }
+            function arrayEquals(a, b) {
+                if (Array.isArray) {
+                    if (!(Array.isArray(a) | Array.isArray(b)))
+                        return false;
+                } else {
+                    if ((typeof a) !== "Array")
+                        return false;
+                    if ((typeof b) !== "Array")
+                        return false;
+                }
+                if (a.length != b.length)
+                    return false;
+                if (a == b)
+                    return true;
+                for (var i = 0; i < a.length; i++)
+                    if (a[i] != b[i])
+                        return false;
+                return true;
+            }
+
+            function start() {
+                var passp2 = false;
+                //Part1
+                try {
+                    $("#dom_testarea").html("<p id='bench_test'>test</p>");
+                    var subp = $("#bench_test");
+                    if (subp.html() == "test")
+                        $("#dom_make").toggleClass("bc_sucess");
+                    else
+                        throw null;
+                } catch (e) {
+                    $("#dom_make,#dom_delete").toggleClass("bc_fail");
+                    passp2 = true;
+                }
+                //Part2
+                if (!passp2) {
+                    try {
+                        $("#bench_test").remove();
+                        if ($("#dom_testarea").html() == "")
+                            $("#dom_delete").toggleClass("bc_sucess");
+                        else
+                            $("#dom_delete").toggleClass("bc_fail");
+                    } catch (e) {
+                        $("#dom_delete").toggleClass("bc_fail");
+                    }
+                }
+                //Part3
+                try {
+                    var bkcb = clipboardData.getData("text");
+                    clipboardData.setData("text", "ranranru");
+                    if (clipboardData.getData("text") == "ranranru")
+                        $("#cb_manage").toggleClass("bc_sucess");
+                    else
+                        $("#cb_manage").toggleClass("bc_fail");
+                    clipboardData.setData("text", bkcb);
+                } catch (e) {
+                    $("#cb_manage").toggleClass("bc_fail");
+                }
+                //Part4
+                try {
+                    if (localStorage) {
+                        localStorage.setItem("test", "ranranru");
+                        if (localStorage.getItem("test") == "ranranru")
+                            $("#ls_manage").toggleClass("bc_sucess");
+                        else
+                            $("#ls_manage").toggleClass("bc_fail");
+                        localStorage.setItem("test", "");
+                    } else
+                        $("#ls_manage").toggleClass("bc_fail");
+                } catch (e) {
+                    $("#ls_manage").toggleClass("bc_fail");
+                }
+
+                //Part5
+                try {
+                    if (sessionStorage) {
+                        sessionStorage.setItem("test", "ranranru");
+                        if (sessionStorage.getItem("test") == "ranranru")
+                            $("#ss_manage").toggleClass("bc_sucess");
+                        else
+                            $("#ss_manage").toggleClass("bc_fail");
+                    } else
+                        $("#ss_manage").toggleClass("bc_fail");
+                    sessionStorage.setItem("test", "");
+                } catch (e) {
+                    $("#ss_manage").toggleClass("bc_fail");
+                }
+                //Part6
+                try {
+                    if (navigator.geolocation) {
+                        $("div#gp_alert").attr("hidden", false);
+                        navigator.geolocation.getCurrentPosition(function (e) {
+                            $("div#gp_read").toggleClass("bc_sucess");
+                            $("div#gp_alert").attr("hidden", true);
+                        }, function (e) {
+                            $("#gp_read").toggleClass("bc_fail");
+                            $("div#gp_alert").attr("hidden", true);
+                        }, {
+                            enableHighAccuracy: true
+                        });
+                    } else
+                        $("#gp_read").toggleClass("bc_fail");
+                } catch (e) {
+                    $("#gp_read").toggleClass("bc_fail");
+                }
+                //Part7
+                try {
+                    document.cookie = "test=ranranru";
+                    document.cookie.split("; ").forEach(function (e) {
+                        if (e == "test=ranranru")
+                            $("#ck_manage").toggleClass("bc_sucess");
+                        else
+                            $("#ck_manage").toggleClass("bc_fail");
+                    });
+                    document.cookie = "test=";
+                } catch (e) {
+                    $("#ck_manage").toggleClass("bc_fail");
+                }
+                //Part8,9,10,11
+                try {
+                    if (!createXMLHttpRequest())
+                        $("div[id^=\"aj_\"]").toggleClass("bc_fail");
+                    else {
+                        //Part8
+                        try {
+                            $.ajax({
+                                cache: false,
+                                dataType: "text",
+                                error: function (a, b, c) {
+                                    $("#aj_sync").toggleClass("bc_fail");
+                                },
+                                success: function (a, b) {
+                                    $("#aj_sync").toggleClass("bc_sucess");
+                                },
+                                type: "GET",
+                                url: getdata
+                            });
+                        } catch (e) {
+                            $("#aj_sync").toggleClass("bc_fail");
+                        }
+                        //Part9
+                        try {
+                            $.ajax({
+                                async: true,
+                                cache: false,
+                                dataType: "text",
+                                error: function (a, b, c) {
+                                    $("#aj_async").toggleClass("bc_fail");
+                                },
+                                success: function (a, b) {
+                                    $("#aj_async").toggleClass("bc_sucess");
+                                },
+                                type: "GET",
+                                url: getdata
+                            });
+                        } catch (e) {
+                            $("#aj_async").toggleClass("bc_fail");
+                        }
+                        //Part10
+                        try {
+                            $
+									.ajax({
+									    cache: false,
+									    dataType: "text",
+									    error: function (a, b, c) {
+									        $("#aj_sync_cd").toggleClass(
+													"bc_fail");
+									    },
+									    success: function (a, b) {
+									        $("#aj_sync_cd").toggleClass(
+													"bc_sucess");
+									    },
+									    type: "GET",
+									    url: "http://nao20010128.web.fc2.com/index.html",
+									    crossDomain: true
+									});
+                        } catch (e) {
+                            $("#aj_sync_cd").toggleClass("bc_fail");
+                        }
+                        //Part11
+                        try {
+                            $
+									.ajax({
+									    async: true,
+									    cache: false,
+									    dataType: "text",
+									    error: function (a, b, c) {
+									        $("#aj_async_cd").toggleClass(
+													"bc_fail");
+									    },
+									    success: function (a, b) {
+									        $("#aj_async_cd").toggleClass(
+													"bc_sucess");
+									    },
+									    type: "GET",
+									    url: "http://nao20010128.web.fc2.com/index.html",
+									    crossDomain: true
+									});
+                        } catch (e) {
+                            $("#aj_async_cd").toggleClass("bc_fail");
+                        }
+                    }
+                } catch (e) {
+                    $("div[id^=\"aj_\"]").toggleClass("bc_fail");
+                }
+                //Part12
+                try {
+                    var worker = new Worker("/blogcopies/worker.js");
+                    worker.onmessage = function (e) {
+                        var res = []
+                        for (i in data)
+                            res[i] = data[i] & 13
+                        if (arrayEquals(res, e.data))
+                            $("#ww_manage").toggleClass("bc_sucess");
+                        else
+                            $("#ww_manage").toggleClass("bc_atte");
+                    }
+                    worker.onerror = function (e) {
+                        $("#ww_manage").toggleClass("bc_fail");
+                    }
+                    worker.postMessage(data);
+                } catch (e) {
+                    $("#ww_manage").toggleClass("bc_fail");
+                }
+                //Part13
+                try {
+                    navigator.vibrate();
+                    $("#vibrate_test").toggleClass("bc_sucess");
+                } catch (e) {
+                    $("#vibrate_test").toggleClass("bc_fail");
+                }
+            }
+        </script>
+    </div>
+
+</body>
+</html>
