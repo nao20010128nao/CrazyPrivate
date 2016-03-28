@@ -588,8 +588,7 @@ public class DataChain {
 					}
 					Document editDoc = Jsoup.parse(main.getInternalFileContent("manage_edit_gps_get.html"));
 					editDoc.select("form.content>input[name=\"address\"]").get(0).attr("value", ggo.address);
-					editDoc.select("form.content>div>input[name=\"close\"]").get(0).attr("checked",
-							ggo.close ? "on" : "off");
+					editDoc.select("form.content>div>input[name=\"close\"]").get(0).attr("checked", ggo.close);
 					editDoc.select("form.content>select[name=\"path\"]>option[value=\"" + np.prefix + "\"]").get(0)
 							.attr("selected", true);
 					editDoc.select("form.content>input[name=\"title\"]").get(0).attr("value", ggo.title);
@@ -617,8 +616,8 @@ public class DataChain {
 					} catch (Throwable e) {
 						return null;
 					}
-					np.prefix = queryMap.getOrDefault("path", "photo");
-					ero.address = queryMap.getOrDefault("address", "photo");
+					np.prefix = queryMap.getOrDefault("path", np.prefix);
+					ero.address = queryMap.getOrDefault("address", ero.address);
 
 					try {
 						Files.write(new File(chainDir, "options.json").toPath(),
@@ -638,12 +637,13 @@ public class DataChain {
 					} catch (Throwable e) {
 						return null;
 					}
-					np.prefix = queryMap.getOrDefault("path", "photo");
-					ggo.title = queryMap.getOrDefault("title", "");
-					ggo.message = queryMap.getOrDefault("message", "");
+					np.prefix = queryMap.getOrDefault("path", np.prefix);
+					ggo.address = queryMap.getOrDefault("address", ggo.address);
+					ggo.title = queryMap.getOrDefault("title", ggo.title);
+					ggo.message = queryMap.getOrDefault("message", ggo.message);
 					ggo.close = "on".equals(queryMap.getOrDefault("close", "off"));
-					ggo.gps_message = queryMap.getOrDefault("gps_message", "続行するにはあなたの現在地情報が必要です。");
-					ggo.gps_button = queryMap.getOrDefault("gps_button", "続行");
+					ggo.gps_message = queryMap.getOrDefault("gps_message", ggo.gps_message);
+					ggo.gps_button = queryMap.getOrDefault("gps_button", ggo.gps_button);
 
 					try {
 						Files.write(new File(chainDir, "options.json").toPath(),
