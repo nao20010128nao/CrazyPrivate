@@ -1,5 +1,5 @@
 {
-    "console.edit.date_format": "yyyy年MM月dd日 HH時mm分ss秒",
-    "gps_get.gps_button": "続行",
-    "gps_get.gps_message": "続行するにはあなたの現在地情報が必要です。"
+    "console.edit.date_format": "MMM d, yyyy HH:mm:ss",
+    "gps_get.gps_button": "Continue",
+    "gps_get.gps_message": "To continue, we need your location information."
 }
