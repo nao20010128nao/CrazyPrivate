@@ -30,8 +30,9 @@ public class CPMain extends NanoHTTPD {
 	Config cfg;
 	Gson gson = new Gson();
 	File configDir = new File(new File(CURRENT_DIRECTORY, "files"), "config.json");
+	SslServerSocketGenerator.SSLInfo sslInfo;
 	public final String lang;
-	public final Config text;
+	public final CustomMap text;
 
 	public CPMain(int port) throws IOException {
 		super(port);
@@ -45,21 +46,21 @@ public class CPMain extends NanoHTTPD {
 				e.printStackTrace();
 				System.err.println("Error!");
 				cfg = new Config();
-				cfg.put("lang", "ja");
-				cfg.put("host", "localhost:8080");
 			}
 		} else {
 			cfg = new Config();
-			cfg.put("lang", "ja");
-			cfg.put("host", "localhost:8080");
 		}
 		try {
 			Files.write(configDir.toPath(), gson.toJson(cfg).getBytes(StandardCharsets.UTF_8));
 		} catch (Throwable e) {
 
 		}
-		lang = cfg.get("lang");
-		HOST = cfg.get("host");
+		lang = cfg.lang;
+		HOST = cfg.host;
+		sslInfo = cfg.sslInfo;
+		if (sslInfo.enabled) {
+			setServerSocketFactory(new WrappingServerSockFactory(SslServerSocketGenerator.generate(sslInfo)));
+		}
 		text = gson.fromJson(getInternalFileContent("defaults.json"), Config.class);
 		if (!ACCEPTED_LANGUAGES.contains(lang)) {
 			System.err.println("Unsupported language: " + lang);
@@ -279,7 +280,12 @@ public class CPMain extends NanoHTTPD {
 		InputStream stream;
 	}
 
-	public static class Config extends HashMap<String, String> {
+	public static class Config {
+		public String host = "localhost:8080";
+		public String lang = "ja";
+		public SslServerSocketGenerator.SSLInfo sslInfo = new SslServerSocketGenerator.SSLInfo();
+	}
 
+	public static class CustomMap extends HashMap<String, String> {
 	}
 }
