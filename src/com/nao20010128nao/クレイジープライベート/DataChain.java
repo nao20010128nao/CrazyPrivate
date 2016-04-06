@@ -479,78 +479,83 @@ public class DataChain {
 					Element history = doc.select("div#history").get(0);
 					for (File session : sessionsDir.listFiles()) {
 						Element section = null;
-						if (np.mode.equals("easyRedirect")) {
-							EasyRedirectSession ers;
-							try {
-								ers = gson.fromJson(
-										new String(Files.readAllBytes(session.toPath()), StandardCharsets.UTF_8),
-										EasyRedirectSession.class);
-							} catch (Throwable e) {
-								// TODO 自動生成された catch ブロック
-								return null;
+						try {
+							if (np.mode.equals("easyRedirect")) {
+								EasyRedirectSession ers;
+								try {
+									ers = gson.fromJson(
+											new String(Files.readAllBytes(session.toPath()), StandardCharsets.UTF_8),
+											EasyRedirectSession.class);
+								} catch (Throwable e) {
+									// TODO 自動生成された catch ブロック
+									return null;
+								}
+								section = Jsoup.parseBodyFragment(
+										main.getInternalFileContent("fragment_easy_redirect_session.html"));
+								Element date = section.select("div>p#date").get(0);
+								Element ip = section.select("div>p#ip").get(0);
+								{
+									Calendar calendar = Calendar.getInstance();
+									calendar.setTimeInMillis(ers.currentMillis);
+									LocalDateTime ldt = LocalDateTime.of(calendar.get(Calendar.YEAR),
+											calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
+											calendar.get(Calendar.HOUR)
+													+ (calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0),
+											calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
+									DateTimeFormatter dtf = DateTimeFormatter
+											.ofPattern(main.text.get("console.edit.date_format"));
+									date.text(date.text().replace("{DATE}", ldt.format(dtf)));
+								}
+								ip.text(ip.text().replace("{ADDR}", ers.ip));
 							}
-							section = Jsoup.parseBodyFragment(
-									main.getInternalFileContent("fragment_easy_redirect_session.html"));
-							Element date = section.select("div>p#date").get(0);
-							Element ip = section.select("div>p#ip").get(0);
-							{
-								Calendar calendar = Calendar.getInstance();
-								calendar.setTimeInMillis(ers.currentMillis);
-								LocalDateTime ldt = LocalDateTime.of(calendar.get(Calendar.YEAR),
-										calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
-										calendar.get(Calendar.HOUR)
-												+ (calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0),
-										calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
-								DateTimeFormatter dtf = DateTimeFormatter
-										.ofPattern(main.text.get("console.edit.date_format"));
-								date.text(date.text().replace("{DATE}", ldt.format(dtf)));
-							}
-							ip.text(ip.text().replace("{ADDR}", ers.ip));
-						}
-						if (np.mode.equals("gpsGet")) {
-							GPSGetSession ggs;
-							try {
-								ggs = gson.fromJson(
-										new String(Files.readAllBytes(session.toPath()), StandardCharsets.UTF_8),
-										GPSGetSession.class);
-							} catch (Throwable e) {
-								// TODO 自動生成された catch ブロック
-								return null;
-							}
-							section = Jsoup
-									.parseBodyFragment(main.getInternalFileContent("fragment_get_gps_session.html"));
-							Element date = section.select("div>p#date").get(0);
-							Element ip = section.select("div>p#ip").get(0);
+							if (np.mode.equals("gpsGet")) {
+								GPSGetSession ggs;
+								try {
+									ggs = gson.fromJson(
+											new String(Files.readAllBytes(session.toPath()), StandardCharsets.UTF_8),
+											GPSGetSession.class);
+								} catch (Throwable e) {
+									// TODO 自動生成された catch ブロック
+									return null;
+								}
+								section = Jsoup.parseBodyFragment(
+										main.getInternalFileContent("fragment_get_gps_session.html"));
+								Element date = section.select("div>p#date").get(0);
+								Element ip = section.select("div>p#ip").get(0);
 
-							Element latitude = section.select("div>p#latitude").get(0);
-							Element longitude = section.select("div>p#longitude").get(0);
-							Element altitude = section.select("div>p#altitude").get(0);
-							Element accuracy = section.select("div>p#accuracy").get(0);
-							Element altitudeAccuracy = section.select("div>p#altitudeAccuracy").get(0);
-							Element heading = section.select("div>p#heading").get(0);
-							Element speed = section.select("div>p#speed").get(0);
-							{
-								Calendar calendar = Calendar.getInstance();
-								calendar.setTimeInMillis(ggs.currentMillis);
-								LocalDateTime ldt = LocalDateTime.of(calendar.get(Calendar.YEAR),
-										calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
-										calendar.get(Calendar.HOUR)
-												+ (calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0),
-										calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
-								DateTimeFormatter dtf = DateTimeFormatter
-										.ofPattern(main.text.get("console.edit.date_format"));
-								date.text(date.text().replace("{VALUE}", ldt.format(dtf)));
-							}
-							ip.text(ip.text().replace("{VALUE}", ggs.ip));
+								Element latitude = section.select("div>p#latitude").get(0);
+								Element longitude = section.select("div>p#longitude").get(0);
+								Element altitude = section.select("div>p#altitude").get(0);
+								Element accuracy = section.select("div>p#accuracy").get(0);
+								Element altitudeAccuracy = section.select("div>p#altitudeAccuracy").get(0);
+								Element heading = section.select("div>p#heading").get(0);
+								Element speed = section.select("div>p#speed").get(0);
+								{
+									Calendar calendar = Calendar.getInstance();
+									calendar.setTimeInMillis(ggs.currentMillis);
+									LocalDateTime ldt = LocalDateTime.of(calendar.get(Calendar.YEAR),
+											calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
+											calendar.get(Calendar.HOUR)
+													+ (calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0),
+											calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
+									DateTimeFormatter dtf = DateTimeFormatter
+											.ofPattern(main.text.get("console.edit.date_format"));
+									date.text(date.text().replace("{VALUE}", ldt.format(dtf)));
+								}
+								ip.text(ip.text().replace("{VALUE}", ggs.ip));
 
-							latitude.text(latitude.text().replace("{VALUE}", ggs.latitude.toString()));
-							longitude.text(longitude.text().replace("{VALUE}", ggs.longitude.toString()));
-							altitude.text(altitude.text().replace("{VALUE}", ggs.altitude.toString()));
-							accuracy.text(accuracy.text().replace("{VALUE}", ggs.accuracy.toString()));
-							altitudeAccuracy
-									.text(altitudeAccuracy.text().replace("{VALUE}", ggs.altitudeAccuracy.toString()));
-							heading.text(heading.text().replace("{VALUE}", ggs.heading.toString()));
-							speed.text(speed.text().replace("{VALUE}", ggs.speed.toString()));
+								latitude.text(latitude.text().replace("{VALUE}", ggs.latitude.toString()));
+								longitude.text(longitude.text().replace("{VALUE}", ggs.longitude.toString()));
+								altitude.text(altitude.text().replace("{VALUE}", ggs.altitude.toString()));
+								accuracy.text(accuracy.text().replace("{VALUE}", ggs.accuracy.toString()));
+								altitudeAccuracy.text(
+										altitudeAccuracy.text().replace("{VALUE}", ggs.altitudeAccuracy.toString()));
+								heading.text(heading.text().replace("{VALUE}", ggs.heading.toString()));
+								speed.text(speed.text().replace("{VALUE}", ggs.speed.toString()));
+							}
+						} catch (Throwable e) {
+							// TODO 自動生成された catch ブロック
+							e.printStackTrace();
 						}
 
 						if (section != null) {
