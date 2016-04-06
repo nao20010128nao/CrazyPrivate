@@ -87,11 +87,11 @@ public class CPMain extends NanoHTTPD {
 		// TODO 自動生成されたメソッド・スタブ
 		Response resp;
 		try {
-			if (InetAddress.getByName(session.getHeaders().get("remote-addr")).getHostAddress().toLowerCase()
+			if (InetAddress.getByName(session.getHeaders().get("remote-addr")).getHostName().toLowerCase()
 					.contains("google")) {
 				return NanoHTTPD.newFixedLengthResponse("Connecting from Google is restricted.");
 			}
-			if (InetAddress.getByName(session.getHeaders().get("remote-addr")).getHostAddress().toLowerCase()
+			if (InetAddress.getByName(session.getHeaders().get("remote-addr")).getHostName().toLowerCase()
 					.contains("tor-exit-node")) {
 				return NanoHTTPD.newFixedLengthResponse("Connecting from Tor is restricted.");
 			}
