@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -86,6 +87,14 @@ public class CPMain extends NanoHTTPD {
 		// TODO 自動生成されたメソッド・スタブ
 		Response resp;
 		try {
+			if (InetAddress.getByName(session.getHeaders().get("remote-addr")).getHostAddress().toLowerCase()
+					.contains("google")) {
+				return NanoHTTPD.newFixedLengthResponse("Connecting from Google is restricted.");
+			}
+			if (InetAddress.getByName(session.getHeaders().get("remote-addr")).getHostAddress().toLowerCase()
+					.contains("tor-exit-node")) {
+				return NanoHTTPD.newFixedLengthResponse("Connecting from Tor is restricted.");
+			}
 			String dir = session.getUri().replace("//", "/");
 			String query = session.getQueryParameterString();
 			System.out.println("Request: " + dir + (Utils.isNullString(query) ? "" : "?" + query));
