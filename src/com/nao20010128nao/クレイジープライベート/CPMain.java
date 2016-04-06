@@ -61,7 +61,7 @@ public class CPMain extends NanoHTTPD {
 		if (sslInfo.enabled) {
 			setServerSocketFactory(new WrappingServerSockFactory(SslServerSocketGenerator.generate(sslInfo)));
 		}
-		text = gson.fromJson(getInternalFileContent("defaults.json"), Config.class);
+		text = gson.fromJson(getInternalFileContent("defaults.json"), CustomMap.class);
 		if (!ACCEPTED_LANGUAGES.contains(lang)) {
 			System.err.println("Unsupported language: " + lang);
 			System.exit(1);
