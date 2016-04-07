@@ -284,6 +284,10 @@ public class CPMain extends NanoHTTPD {
 		return newFixedLengthResponse(Status.OK, mime, ent.stream, ent.size);
 	}
 
+	public DataChain getDataChain() {
+		return dc;
+	}
+
 	class Entry {
 		long size;
 		InputStream stream;

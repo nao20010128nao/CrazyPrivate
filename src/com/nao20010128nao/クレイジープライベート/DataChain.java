@@ -25,7 +25,7 @@ import fi.iki.elonen.NanoHTTPD.Response;
 
 public class DataChain {
 	static final List<String> GPS_NULL_VALUES = Arrays.asList("undefined", "NaN", "", "null", "0", null);
-	static final File FILES_DIR = new File(CPMain.CURRENT_DIRECTORY, "files");
+	public static final File FILES_DIR = new File(CPMain.CURRENT_DIRECTORY, "files");
 	static final String ALPHABET_SMALL = "abcdefghijklmnopqrstuvwxyz_-";
 	static final String RANDOM_CHARS = ALPHABET_SMALL + ALPHABET_SMALL.toUpperCase() + ALPHABET_SMALL
 			+ ALPHABET_SMALL.toUpperCase();
