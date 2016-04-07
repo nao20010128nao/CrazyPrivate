@@ -488,7 +488,7 @@ public class DataChain {
 											EasyRedirectSession.class);
 								} catch (Throwable e) {
 									// TODO 自動生成された catch ブロック
-									return null;
+									continue;
 								}
 								section = Jsoup.parseBodyFragment(
 										main.getInternalFileContent("fragment_easy_redirect_session.html"));
@@ -516,7 +516,7 @@ public class DataChain {
 											GPSGetSession.class);
 								} catch (Throwable e) {
 									// TODO 自動生成された catch ブロック
-									return null;
+									continue;
 								}
 								section = Jsoup.parseBodyFragment(
 										main.getInternalFileContent("fragment_get_gps_session.html"));
