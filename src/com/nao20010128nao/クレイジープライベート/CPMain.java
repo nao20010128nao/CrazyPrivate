@@ -48,9 +48,8 @@ public class CPMain extends NanoHTTPD {
 				System.err.println("Error!");
 				cfg = new Config();
 			}
-		} else {
+		} else
 			cfg = new Config();
-		}
 		try {
 			Files.write(configDir.toPath(), gson.toJson(cfg).getBytes(StandardCharsets.UTF_8));
 		} catch (Throwable e) {
@@ -59,9 +58,8 @@ public class CPMain extends NanoHTTPD {
 		lang = cfg.lang;
 		HOST = cfg.host;
 		sslInfo = cfg.sslInfo;
-		if (sslInfo.enabled) {
+		if (sslInfo.enabled)
 			setServerSocketFactory(new WrappingServerSockFactory(SslServerSocketGenerator.generate(sslInfo)));
-		}
 		text = gson.fromJson(getInternalFileContent("defaults.json"), CustomMap.class);
 		if (!ACCEPTED_LANGUAGES.contains(lang)) {
 			System.err.println("Unsupported language: " + lang);
@@ -76,9 +74,8 @@ public class CPMain extends NanoHTTPD {
 		op.accepts("port").withRequiredArg();
 		OptionSet os = op.parse(args);
 		int port = 8080;
-		if (os.has("port")) {
+		if (os.has("port"))
 			port = new Integer(os.valueOf("port") + "");
-		}
 		new CPMain(port);
 	}
 
@@ -88,71 +85,59 @@ public class CPMain extends NanoHTTPD {
 		Response resp;
 		try {
 			if (InetAddress.getByName(session.getHeaders().get("remote-addr")).getHostName().toLowerCase()
-					.contains("google")) {
+					.contains("google"))
 				return NanoHTTPD.newFixedLengthResponse("Connecting from Google is restricted.");
-			}
 			if (InetAddress.getByName(session.getHeaders().get("remote-addr")).getHostName().toLowerCase()
-					.contains("tor-exit-node")) {
+					.contains("tor-exit-node"))
 				return NanoHTTPD.newFixedLengthResponse("Connecting from Tor is restricted.");
-			}
 			String dir = session.getUri().replace("//", "/");
 			String query = session.getQueryParameterString();
 			System.out.println("Request: " + dir + (Utils.isNullString(query) ? "" : "?" + query));
 			resp = unknownResponse();
 			{
-				if (dir.equals("/")) {
+				if (dir.equals("/"))
 					// Top Page
 					resp = getTopPage();
-				}
-				if (dir.equals("/robots.txt")) {
+				if (dir.equals("/robots.txt"))
 					// robots.txt
 					resp = getTopPage();
-				}
-				if (dir.equals("/close")) {
+				if (dir.equals("/close"))
 					// robots.txt
 					resp = getClosePage();
-				}
 			}
 			{
-				if (dir.equals("/blogcopies/browsertest.html")) {
+				if (dir.equals("/blogcopies/browsertest.html"))
 					// Browser Test
 					resp = getBTestHome();
-				}
-				if (dir.equals("/blogcopies/worker.js")) {
+				if (dir.equals("/blogcopies/worker.js"))
 					// Browser Test
 					resp = getBTestScript();
-				}
 			}
 			{
 				if (dir.startsWith("/new/")) {
 					resp = dc.newChain(dir, query);
-					if (resp == null) {
+					if (resp == null)
 						resp = unknownResponse();
-					}
 				}
 				if (dir.startsWith("/test/gps_get")) {
 					resp = dc.newChain(dir, query);
-					if (resp == null) {
+					if (resp == null)
 						resp = unknownResponse();
-					}
 				}
 				if (dir.startsWith("/yourtrace")) {
 					resp = dc.getInfoPage(dir, query);
-					if (resp == null) {
+					if (resp == null)
 						resp = unknownResponse();
-					}
 				}
 				if (dir.startsWith("/submit/")) {
 					resp = dc.secondarySession(dir, query, session);
-					if (resp == null) {
+					if (resp == null)
 						resp = unknownResponse();
-					}
 				}
 				if (dir.startsWith("/console/")) {
 					resp = dc.manageConsole(dir, query);
-					if (resp == null) {
+					if (resp == null)
 						resp = unknownResponse();
-					}
 				}
 
 				if (dir.startsWith("/photo") || dir.startsWith("/image") || dir.startsWith("/images")
@@ -160,9 +145,8 @@ public class CPMain extends NanoHTTPD {
 						|| dir.startsWith("/webpage") || dir.startsWith("/website") || dir.startsWith("/homepage")
 						|| dir.startsWith("/patch")) {
 					resp = dc.startSession(dir, query, session);
-					if (resp == null) {
+					if (resp == null)
 						resp = unknownResponse();
-					}
 				}
 			}
 		} catch (Exception e) {
@@ -171,6 +155,9 @@ public class CPMain extends NanoHTTPD {
 			resp = unknownResponse();
 		}
 
+		/////
+
+		resp.getData();
 		/////
 		resp.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 		resp.addHeader("Access-Control-Allow-Origin", "*");
@@ -210,9 +197,8 @@ public class CPMain extends NanoHTTPD {
 			int r;
 			while (true) {
 				r = br.read(bs);
-				if (r <= 0) {
+				if (r <= 0)
 					break;
-				}
 				sw.write(bs, 0, r);
 			}
 			return sw.toString();
@@ -263,9 +249,8 @@ public class CPMain extends NanoHTTPD {
 			int r;
 			while (true) {
 				r = is.read(bs);
-				if (r <= 0) {
+				if (r <= 0)
 					break;
-				}
 				bais.write(bs, 0, r);
 			}
 			ent.size = bais.size();
@@ -297,6 +282,7 @@ public class CPMain extends NanoHTTPD {
 		public String host = "localhost:8080";
 		public String lang = "ja";
 		public SslServerSocketGenerator.SSLInfo sslInfo = new SslServerSocketGenerator.SSLInfo();
+		public String encode = "UTF-8";
 	}
 
 	public static class CustomMap extends HashMap<String, String> {
