@@ -102,7 +102,7 @@ public class CPMain extends NanoHTTPD {
 					// robots.txt
 					resp = getTopPage();
 				if (dir.equals("/close"))
-					// robots.txt
+					// close
 					resp = getClosePage();
 			}
 			{
@@ -156,13 +156,13 @@ public class CPMain extends NanoHTTPD {
 		}
 
 		/////
-
-		resp.getData();
-		/////
 		resp.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 		resp.addHeader("Access-Control-Allow-Origin", "*");
 		resp.addHeader("Cache-Control", "no-cache");
 		resp.addHeader("Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
+		resp.addHeader("Content-type", resp.getMimeType() + "; charset=UTF-8");
+		resp.setMimeType(null);
+		resp.setGzipEncoding(true);
 		return resp;
 	}
 
@@ -268,6 +268,12 @@ public class CPMain extends NanoHTTPD {
 	Response entryToResponse(Entry ent, String mime) {
 		return newFixedLengthResponse(Status.OK, mime, ent.stream, ent.size);
 	}
+	/*
+	 * Response convertEncode(Response resp, String encode) {
+	 * if ("UTF-8".equalsIgnoreCase(encode) | "UTF_8".equalsIgnoreCase(encode))
+	 * return resp;// Converting is not required
+	 * }
+	 */
 
 	public DataChain getDataChain() {
 		return dc;
@@ -282,7 +288,6 @@ public class CPMain extends NanoHTTPD {
 		public String host = "localhost:8080";
 		public String lang = "ja";
 		public SslServerSocketGenerator.SSLInfo sslInfo = new SslServerSocketGenerator.SSLInfo();
-		public String encode = "UTF-8";
 	}
 
 	public static class CustomMap extends HashMap<String, String> {
