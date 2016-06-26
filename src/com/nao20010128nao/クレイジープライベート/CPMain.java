@@ -88,7 +88,7 @@ public class CPMain extends NanoHTTPD {
 					.contains("google"))
 				return NanoHTTPD.newFixedLengthResponse("Connecting from Google is restricted.");
 			if (InetAddress.getByName(session.getHeaders().get("remote-addr")).getHostName().toLowerCase()
-					.contains("tor-exit-node"))
+					.contains("tor"))
 				return NanoHTTPD.newFixedLengthResponse("Connecting from Tor is restricted.");
 			String dir = session.getUri().replace("//", "/");
 			String query = session.getQueryParameterString();
