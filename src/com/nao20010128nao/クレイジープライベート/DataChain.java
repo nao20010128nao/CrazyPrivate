@@ -37,9 +37,8 @@ public class DataChain {
 	public DataChain(CPMain server) {
 		// TODO 自動生成されたコンストラクター・スタブ
 		main = server;
-		if (!FILES_DIR.exists()) {
+		if (!FILES_DIR.exists())
 			FILES_DIR.mkdirs();
-		}
 	}
 
 	public Response newChain(String path, String query) {
@@ -131,9 +130,8 @@ public class DataChain {
 		if (path.startsWith("/yourtrace")) {
 			String publicKey = queryMap.get("private");
 			NodeParent np = findChain(publicKey, false);
-			if (np == null) {
+			if (np == null)
 				return null;
-			}
 			if (np.mode.equals("easyRedirect")) {
 				String s = main.getInternalFileContent("easy_redirect_result.html");
 				String url = "http://" + main.HOST + "/" + np.prefix + "/" + np.publicKey;
@@ -159,13 +157,11 @@ public class DataChain {
 				|| path.startsWith("/patch")) {
 			String publicKey = path.split("\\/")[2];
 			NodeParent np = findChain(publicKey, true);
-			if (np == null) {
+			if (np == null)
 				return null;
-			}
 			String urlPrefix = path.split("\\/")[1];
-			if (!np.prefix.equals(urlPrefix)) {
+			if (!np.prefix.equals(urlPrefix))
 				return null;
-			}
 			if (np.mode.equals("easyRedirect")) {
 				String json;
 				File dir = new File(FILES_DIR, np.publicKey);
@@ -431,14 +427,12 @@ public class DataChain {
 					} catch (IOException e) {
 					}
 				}
-				if (ggo.close) {
+				if (ggo.close)
 					result = NanoHTTPD.newFixedLengthResponse("CLOSE_WEBPAGE");
-				} else {
+				else
 					result = NanoHTTPD.newFixedLengthResponse(ggo.address);
-				}
-			} else {
+			} else
 				System.err.println("File does not exist");
-			}
 		}
 		return result;
 	}
@@ -451,19 +445,17 @@ public class DataChain {
 				@Override
 				public boolean test(String t) {
 					// TODO 自動生成されたメソッド・スタブ
-					if (t == null) {
+					if (t == null)
 						return false;
-					}
-					if ("true".equals(t)) {
+					if ("true".equals(t))
 						return true;
-					}
 					return false;
 				}
 			}.test(queryMap.get("edited"));
 			NodeParent np = findChain(queryMap.get("secret"), false);
-			if (np == null) {
+			if (np == null)
 				result = NanoHTTPD.newFixedLengthResponse(main.getInternalFileContent("manage_error_notfound.html"));
-			} else {
+			else {
 				String publnk = "http://" + main.HOST + "/" + np.prefix + "/" + np.publicKey;
 				Document doc = Jsoup
 						.parse(main.getInternalFileContent("manage_home" + (edited ? "_edited" : "") + ".html"));
@@ -498,7 +490,7 @@ public class DataChain {
 									Calendar calendar = Calendar.getInstance();
 									calendar.setTimeInMillis(ers.currentMillis);
 									LocalDateTime ldt = LocalDateTime.of(calendar.get(Calendar.YEAR),
-											calendar.get(Calendar.MONTH)+1, calendar.get(Calendar.DAY_OF_MONTH),
+											calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH),
 											calendar.get(Calendar.HOUR)
 													+ (calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0),
 											calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
@@ -534,7 +526,7 @@ public class DataChain {
 									Calendar calendar = Calendar.getInstance();
 									calendar.setTimeInMillis(ggs.currentMillis);
 									LocalDateTime ldt = LocalDateTime.of(calendar.get(Calendar.YEAR),
-											calendar.get(Calendar.MONTH)+1, calendar.get(Calendar.DAY_OF_MONTH),
+											calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH),
 											calendar.get(Calendar.HOUR)
 													+ (calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0),
 											calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
@@ -558,9 +550,8 @@ public class DataChain {
 							e.printStackTrace();
 						}
 
-						if (section != null) {
+						if (section != null)
 							history.appendChild(section.select("div").get(0));
-						}
 					}
 				}
 				result = NanoHTTPD.newFixedLengthResponse(doc.html());
@@ -568,9 +559,9 @@ public class DataChain {
 		}
 		if (path.startsWith("/console/edit")) {
 			NodeParent np = findChain(queryMap.get("secret"), false);
-			if (np == null) {
+			if (np == null)
 				result = NanoHTTPD.newFixedLengthResponse(main.getInternalFileContent("manage_error_notfound.html"));
-			} else {
+			else {
 				File chainDir = new File(FILES_DIR, np.publicKey);
 				if (np.mode.equals("easyRedirect")) {
 					EasyRedirectOptions ero;
@@ -611,9 +602,9 @@ public class DataChain {
 		}
 		if (path.startsWith("/console/apply")) {
 			NodeParent np = findChain(queryMap.get("secret"), false);
-			if (np == null) {
+			if (np == null)
 				result = NanoHTTPD.newFixedLengthResponse(main.getInternalFileContent("manage_error_notfound.html"));
-			} else {
+			else {
 				File chainDir = new File(FILES_DIR, np.publicKey);
 				if (np.mode.equals("easyRedirect")) {
 					EasyRedirectOptions ero;
@@ -666,18 +657,17 @@ public class DataChain {
 		}
 		if (path.startsWith("/console/delete")) {
 			NodeParent np = findChain(queryMap.get("secret"), false);
-			if (np == null) {
+			if (np == null)
 				result = NanoHTTPD.newFixedLengthResponse(main.getInternalFileContent("manage_error_notfound.html"));
-			} else {
+			else {
 				File chainDir = new File(FILES_DIR, np.publicKey);
 
 				new File(chainDir, "chain.json").delete();
 				new File(chainDir, "options.json").delete();
 
 				File sessionsDir = new File(chainDir, "sessions");
-				for (File session : sessionsDir.listFiles()) {
+				for (File session : sessionsDir.listFiles())
 					session.delete();
-				}
 
 				sessionsDir.delete();
 				chainDir.delete();
@@ -690,58 +680,46 @@ public class DataChain {
 
 	public String createKey(boolean isPublic) {
 		StringBuilder sb = new StringBuilder(10);
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 10; i++)
 			sb.append(RANDOM_CHARS.charAt(Math.abs(sr.nextInt()) % RANDOM_CHARS.length()));
-		}
-		if (checkDuplication(sb.toString(), isPublic)) {
+		if (checkDuplication(sb.toString(), isPublic))
 			return createKey(isPublic);
-		}
 		return sb.toString();
 	}
 
 	public boolean checkDuplication(String key, boolean isPublic) {
-		for (File f : FILES_DIR.listFiles()) {
+		for (File f : FILES_DIR.listFiles())
 			try {
 				File chain = new File(f, "chain.json");
 				String s = new String(Files.readAllBytes(chain.toPath()), StandardCharsets.UTF_8);
 				NodeParent np = gson.fromJson(s, NodeParent.class);
 				if (isPublic) {
-					if (key.equals(np.publicKey)) {
+					if (key.equals(np.publicKey))
 						return true;
-					}
-				} else {
-					if (key.equals(np.privateKey)) {
-						return true;
-					}
-				}
+				} else if (key.equals(np.privateKey))
+					return true;
 			} catch (IOException e) {
 				// TODO 自動生成された catch ブロック
 
 			}
-		}
 		return false;
 	}
 
 	public NodeParent findChain(String key, boolean isPublic) {
-		for (File f : FILES_DIR.listFiles()) {
+		for (File f : FILES_DIR.listFiles())
 			try {
 				File chain = new File(f, "chain.json");
 				String s = new String(Files.readAllBytes(chain.toPath()), StandardCharsets.UTF_8);
 				NodeParent np = gson.fromJson(s, NodeParent.class);
 				if (isPublic) {
-					if (key.equals(np.publicKey)) {
+					if (key.equals(np.publicKey))
 						return np;
-					}
-				} else {
-					if (key.equals(np.privateKey)) {
-						return np;
-					}
-				}
+				} else if (key.equals(np.privateKey))
+					return np;
 			} catch (IOException e) {
 				// TODO 自動生成された catch ブロック
 
 			}
-		}
 		return null;
 	}
 
