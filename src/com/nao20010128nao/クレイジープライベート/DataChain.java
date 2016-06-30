@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -176,6 +177,7 @@ public class DataChain {
 				EasyRedirectSession ers = new EasyRedirectSession();
 				ers.currentMillis = System.currentTimeMillis();
 				ers.ip = session.getHeaders().getOrDefault("remote-addr", "127.0.0.1");
+				ers.ua = session.getHeaders().getOrDefault("user-agent", null);
 				dir = new File(dir, "sessions");
 				dir = new File(dir, ers.currentMillis + ".json");
 				json = gson.toJson(ers);
@@ -486,6 +488,7 @@ public class DataChain {
 										main.getInternalFileContent("fragment_easy_redirect_session.html"));
 								Element date = section.select("div>p#date").get(0);
 								Element ip = section.select("div>p#ip").get(0);
+								Element ua = section.select("div>p#ua").get(0);
 								{
 									Calendar calendar = Calendar.getInstance();
 									calendar.setTimeInMillis(ers.currentMillis);
@@ -499,6 +502,10 @@ public class DataChain {
 									date.text(date.text().replace("{DATE}", ldt.format(dtf)));
 								}
 								ip.text(ip.text().replace("{ADDR}", ers.ip));
+								if (ers.ua == null)
+									ua.remove();
+								else
+									ua.text(ua.text().replace("{UA}", StringEscapeUtils.escapeHtml4(ers.ua)));
 							}
 							if (np.mode.equals("gpsGet")) {
 								GPSGetSession ggs;
@@ -733,7 +740,7 @@ public class DataChain {
 	}
 
 	public static class EasyRedirectSession {
-		public String ip;
+		public String ip, ua;
 		public long currentMillis;
 	}
 
