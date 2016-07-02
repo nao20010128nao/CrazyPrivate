@@ -84,14 +84,25 @@ public class CPMain extends NanoHTTPD {
 		// TODO 自動生成されたメソッド・スタブ
 		Response resp;
 		try {
+			String dir = session.getUri().replace("//", "/");
+			String query = session.getQueryParameterString();
 			if (InetAddress.getByName(session.getHeaders().get("remote-addr")).getHostName().toLowerCase()
 					.contains("google"))
-				return NanoHTTPD.newFixedLengthResponse("Connecting from Google is restricted.");
+				if (dir.equals("/robots.txt"))
+					return getRobotsTxt();
+				else
+					return NanoHTTPD.newFixedLengthResponse(
+							"Connecting from Google is restricted.\nIf you're using Data Compression, please disable it and try again.");
 			if (InetAddress.getByName(session.getHeaders().get("remote-addr")).getHostName().toLowerCase()
 					.contains("tor"))
 				return NanoHTTPD.newFixedLengthResponse("Connecting from Tor is restricted.");
-			String dir = session.getUri().replace("//", "/");
-			String query = session.getQueryParameterString();
+			if (InetAddress.getByName(session.getHeaders().get("remote-addr")).getHostName().toLowerCase()
+					.contains("heteml.jp"))
+				return NanoHTTPD.newFixedLengthResponse("Connecting from *.heteml.jp is restricted.");
+			if (InetAddress.getByName(session.getHeaders().get("remote-addr")).getHostName().toLowerCase()
+					.contains("opera-mini.net"))
+				return NanoHTTPD.newFixedLengthResponse(
+						"Connecting via Opera Max or from compression-enabled Opera Mini is restricted.\\nIf you're using Data Compression, please disable it and try again.");
 			System.out.println("Request: " + dir + (Utils.isNullString(query) ? "" : "?" + query));
 			resp = unknownResponse();
 			{
@@ -100,7 +111,7 @@ public class CPMain extends NanoHTTPD {
 					resp = getTopPage();
 				if (dir.equals("/robots.txt"))
 					// robots.txt
-					resp = getTopPage();
+					resp = getRobotsTxt();
 				if (dir.equals("/close"))
 					// close
 					resp = getClosePage();
@@ -168,7 +179,7 @@ public class CPMain extends NanoHTTPD {
 
 	public Response unknownResponse() {
 		// TODO 自動生成されたメソッド・スタブ
-		return newFixedLengthResponse(Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "");
+		return newFixedLengthResponse(Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "404 Not Found");
 	}
 
 	public static Response newRedirectResponse(String destination) {
