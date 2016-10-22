@@ -103,7 +103,8 @@ public class CPMain extends NanoHTTPD {
 					.contains("opera-mini.net"))
 				return NanoHTTPD.newFixedLengthResponse(
 						"Connecting via Opera Max or from compression-enabled Opera Mini is restricted.\\nIf you're using Data Compression, please disable it and try again.");
-			System.out.println("Request: " + dir + (Utils.isNullString(query) ? "" : "?" + query));
+			System.out.println(session.getHeaders().get("remote-addr") + ": Request: " + dir
+					+ (Utils.isNullString(query) ? "" : "?" + query));
 			resp = unknownResponse();
 			{
 				if (dir.equals("/"))
